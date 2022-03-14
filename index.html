@@ -8,7 +8,7 @@
   
   
   
-  <title>Hexo</title>
+  <title>INVOLUTION_STUDY</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -20,6 +20,8 @@
     console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
   </script>
 
+  
+    <meta name="description" content="人生-谁都是第一次">
   
 
   
@@ -56,8 +58,6 @@
   <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
   
   
-    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
-  
 
 <meta name="generator" content="Hexo 6.1.0"></head>
 
@@ -71,7 +71,7 @@
   <header>
     <div class="site-brand">
       <div class="site-title">
-        <a href="/">GODBMW.com</a>
+        <a href="/">INVOLUTION_STUDY.cn</a>
       </div>
     </div>
     <nav class="site-navigation">
@@ -121,17 +121,6 @@
           
         </li>
       
-        <li class="nav-item" data-path="/friends/">
-          
-            <a 
-              href="/friends/"
-              target="_self"
-            >
-              友链
-            </a>
-          
-        </li>
-      
         <li class="nav-item" data-path="/about/">
           
             <a 
@@ -150,19 +139,10 @@
               
                 <li>
                   <a 
-                    href="https://github.com/dongyuanxin" 
+                    href="https://github.com/rocky9205" 
                     target="_blank"
                   >
                     Github
-                  </a>
-                </li>
-              
-                <li>
-                  <a 
-                    href="https://www.zhihu.com/people/godbmw/activities" 
-                    target="_blank"
-                  >
-                    知乎
                   </a>
                 </li>
               
@@ -215,33 +195,36 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/2022/03/12/hello-world/">
-        <span>Hello World</span>
+      <a href="/2022/03/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%88%9D%E7%AB%A0/">
+        <span>设计模式--初章</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2022-03-12
+        发布时间 : 2022-03-14
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2022-03-12
+        发布 : 2022-03-14
       </span>
       
-      
         <span>
-          浏览 : <span class="article-timer" data-identity="hello-world"></span>
+        分类 :
+          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+            设计模式
+          </a>
         </span>
+      
       
     </div>
     
     <!-- 文章简介 -->
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        
+        <h3 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h3><p>“设计模式是指控件在页面设计器中呈现时运行的代码。设计模式使人们可以更加简单方便地复用成功的设计和体系结构。将已证实的技术表述成设计模式也会使新系统开发者更加容易理解其设计思路。</p>
       </div>
     </div>
     <div class="article-footer">
@@ -249,16 +232,43 @@
         <!-- 分类pc端可见 -->
         <span class="pc-view">
           
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+              设计模式
+            </a>
+          </span>
+          
         <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/%E5%88%9D%E7%AB%A0/">
+                  #初章
+                </a>
+              </span>
+            
+              <span class="span--tag">
+                <a href="/tags/%E6%A6%82%E5%BF%B5/">
+                  #概念
+                </a>
+              </span>
+            
+              <span class="span--tag">
+                <a href="/tags/%E6%80%9D%E8%80%83/">
+                  #思考
+                </a>
+              </span>
+            
+              <span class="span--tag">
+                <a href="/tags/">
+                  #...
+                </a>
+              </span>
+            
                     
         </span>
       </div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="hello-world"></span>
-          </span>
-        </div>
       
     </div>
   </div>
@@ -269,133 +279,6 @@
     
   </nav>
 
-  
-    <script defer>
-const valineAPI = (() => {
-  try {
-    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
-  } catch(error) {}
-  const isExist = (identity) => {
-    identity = identity || getRealPath();
-    let query = new AV.Query('Timer');
-    return new Promise((resolve, reject) => {
-      query.equalTo("identity", identity);
-      query.find().then(results => {
-        resolve(results.length > 0);
-      }, error => reject(error));
-    })
-  }
-
-  const _get = (identity) => {
-    let query = null;
-    if(identity && identity instanceof Array){
-      let querys = [];
-      for(let i = 0; i < identity.length; ++i) {
-        querys[i] = new AV.Query('Timer');
-        querys[i].equalTo('identity', identity[i]);
-      }
-      query = AV.Query.or.apply(null ,querys);
-    } else {
-      identity = identity || getRealPath();
-      query = new AV.Query("Timer");
-      query.equalTo("identity", identity);
-    }
-
-    return new Promise((resolve, reject) => {
-      query.find()
-      .then(results => resolve(results))
-      .catch(error => reject(error))
-    })
-  }
-
-  const create = (identity) => {
-    identity = identity || getRealPath();
-    return new Promise((resolve, reject) => {
-      let Todo = AV.Object.extend('Timer');
-      let todo = new Todo();
-      todo.set("times", 1);
-      todo.set("identity", identity);
-      todo.save().then(res => resolve(true), error => reject(error));
-    })
-  }
-
-  const update = (identity) => {
-    identity = identity || getRealPath();
-    return new Promise((resolve, reject) => {
-      let query = new AV.Query('Timer');
-      query.equalTo("identity", identity);
-      query.find().then(todos => {
-        todos.forEach(todo => {
-          todo.set("times", todo.attributes.times + 1);
-        });
-        return AV.Object.saveAll(todos);
-      }).then(todos => resolve(true), error => reject(error));
-    })
-  }
-
-  return {
-    isExist,
-    _get,
-    update,
-    create
-  }
-})()
-
-const calcAndWriteTimes = () => {
-  let isPost = false;
-
-  let timerAllDOM = document.querySelectorAll(".article-timer");
-
-  if(isPost) {
-    let identity = timerAllDOM[0].getAttribute("data-identity");
-    valineAPI.isExist(identity)
-    .then(exist => {
-      if(exist) {
-        return valineAPI.update(identity);
-      }
-      return new Promise(resolve => resolve(true));
-    })
-    .then( succuess => valineAPI._get(identity))
-    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
-    .catch(error => console.log(error.message))
-    return ;
-  }
-
-  let timerDOMCache = {};
-
-  for(let timerDOM of timerAllDOM) {
-    let identity = timerDOM.getAttribute("data-identity");
-    if(timerDOMCache.hasOwnProperty(identity)){
-      timerDOMCache[identity].dom.push(timerDOM);
-    }else{
-      timerDOMCache[identity] = {
-        dom: [timerDOM],
-        times: undefined
-      };
-    }
-  }
-
-  let identities = Object.keys(timerDOMCache);
-  valineAPI._get(identities).then(results => {
-    for(let result of results) {
-      let {identity, times} = result.attributes;
-      timerDOMCache[identity].times = times;
-      timerDOMCache[identity].dom.map(item => item.innerText = times);
-    }
-    for(let identity of identities) {
-      if(timerDOMCache[identity].times){
-        continue;
-      }
-      timerDOMCache[identity].dom.map(item => item.innerText = 1);
-      valineAPI.create(identity);
-    }
-  }).catch(error => console.log(error.message))
-}
-
-if(true){
-  calcAndWriteTimes();
-}
-</script>
    
 </div>
 
@@ -414,7 +297,7 @@ if(true){
 
 <script>
 const timeToNowDOM = document.querySelector("#time-to-now");
-const startTimestamp = new Date(2018, 1, 10).getTime();
+const startTimestamp = new Date(2022, 2, 1).getTime();
 
 const updateTimeStr = () => {
   let offset = parseInt(
