@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+  
+  <title>设计模式--第二章（下） | INVOLUTION_STUDY</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="设计模式,概念,思考,...,六大设计原则,第二章（下）," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="人生-谁都是第一次">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  
+<script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">INVOLUTION_STUDY.cn</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a 
+              href="/about/"
+              target="_self"
+            >
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/rocky9205" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>设计模式--第二章（下）</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2022-03-16
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+            设计模式
+          </a>
+      </span>
+    
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h3 id="正文："><a href="#正文：" class="headerlink" title="正文："></a>正文：</h3><p><strong>迪米特原则：</strong></p>
+<p>​    <strong>原则定义：</strong></p>
+<p>​            只与你的直接朋友交谈，不跟“陌生人”说话（Talk only to your immediate friends and not to strangers）。其含义是：如果两个软件实体无须直接通信，那么就不应当发生直接的相互调用，可以通过第三方转发该调用。其目的是降低类之间的耦合度，提高模块的相对独立性。</p>
+<p>​            迪米特法则中的“朋友”是指：当前对象本身、当前对象的成员对象、当前对象所创建的对象、当前对象的方法参数等，这些对象同当前对象存在关联、聚合或组合关系，可以直接访问这些对象的方法。</p>
+<p>​            核心：最少知道、减少依赖 做自己该做的事情，不要越级，这个会让代码结构变得繁琐，互相侵入性很高，难以拓展和维护</p>
+<p>​    <strong>好处：</strong></p>
+<p>​        迪米特法则要求限制软件实体之间通信的宽度和深度，正确使用迪米特法则将有以下两个优点。</p>
+<p>​                1.    降低了类之间的耦合度，提高了模块的相对独立性。</p>
+<p>​                2.    由于亲合度降低，从而提高了类的可复用率和系统的扩展性。</p>
+<p>​    <strong>缺点：</strong></p>
+<p>​        过度使用迪米特法则会使系统产生大量的中介类，从而增加系统的复杂性，使模块之间的通信效率降低。所以，在釆用迪米特法则时需要反复权衡，确保高内聚和低耦合的同时，保证系统的结构清晰。</p>
+<p>​    <strong>模拟场景：</strong></p>
+<p>​        校长、教师、学生、成绩、排名</p>
+<p>​    <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8B%EF%BC%89/%E8%BF%AA%E7%B1%B3%E7%89%B9%E5%8E%9F%E5%88%99.png" alt="迪米特法则"></p>
+<p>​    <strong>代码：</strong></p>
+<p>​        原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(ApiTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_Principal</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">Principal</span> <span class="variable">principal</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Principal</span>();</span><br><span class="line">        Map&lt;String, Object&gt; map = principal.queryClazzInfo(<span class="string">&quot;3年1班&quot;</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;查询结果：&#123;&#125;&quot;</span>, JSON.toJSONString(map));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">校长：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Principal</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Teacher</span> <span class="variable">teacher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Teacher</span>(<span class="string">&quot;丽华&quot;</span>, <span class="string">&quot;3年1班&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询班级信息，总分数、学生人数、平均值</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">queryClazzInfo</span><span class="params">(String clazzId)</span> &#123;</span><br><span class="line">        <span class="comment">// 获取班级信息；学生总人数、总分、平均分</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">stuCount</span> <span class="operator">=</span> clazzStudentCount();</span><br><span class="line">        <span class="type">double</span> <span class="variable">totalScore</span> <span class="operator">=</span> clazzTotalScore();</span><br><span class="line">        <span class="type">double</span> <span class="variable">averageScore</span> <span class="operator">=</span> clazzAverageScore();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 组装对象，实际业务开发会有对应的类</span></span><br><span class="line">        Map&lt;String, Object&gt; mapObj = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        mapObj.put(<span class="string">&quot;班级&quot;</span>, teacher.getClazz());</span><br><span class="line">        mapObj.put(<span class="string">&quot;老师&quot;</span>, teacher.getName());</span><br><span class="line">        mapObj.put(<span class="string">&quot;学生人数&quot;</span>, stuCount);</span><br><span class="line">        mapObj.put(<span class="string">&quot;班级总分数&quot;</span>, totalScore);</span><br><span class="line">        mapObj.put(<span class="string">&quot;班级平均分&quot;</span>, averageScore);</span><br><span class="line">        <span class="keyword">return</span> mapObj;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 总分</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">clazzTotalScore</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">totalScore</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Student stu : Teacher.getStudentList()) &#123;</span><br><span class="line">            totalScore += stu.getGrade();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> totalScore;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 平均分</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">clazzAverageScore</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">totalScore</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Student stu : Teacher.getStudentList()) &#123;</span><br><span class="line">            totalScore += stu.getGrade();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> totalScore / Teacher.getStudentList().size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 班级人数</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">clazzStudentCount</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Teacher.getStudentList().size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">老师：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Teacher</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;                <span class="comment">// 老师名称</span></span><br><span class="line">    <span class="keyword">private</span> String clazz;               <span class="comment">// 班级</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;Student&gt; studentList;  <span class="comment">// 学生</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Teacher</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Teacher</span><span class="params">(String name, String clazz)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.clazz = clazz;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        studentList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;花花&quot;</span>, <span class="number">10</span>, <span class="number">589</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;豆豆&quot;</span>, <span class="number">54</span>, <span class="number">356</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;秋雅&quot;</span>, <span class="number">23</span>, <span class="number">439</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;皮皮&quot;</span>, <span class="number">2</span>, <span class="number">665</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;蛋蛋&quot;</span>, <span class="number">19</span>, <span class="number">502</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Student&gt; <span class="title function_">getStudentList</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> studentList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getClazz</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> clazz;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">学生：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Student</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;    <span class="comment">// 学生姓名</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> rank;       <span class="comment">// 考试排名(总排名)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">double</span> grade;   <span class="comment">// 考试分数(总分)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Student</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Student</span><span class="params">(String name, <span class="type">int</span> rank, <span class="type">double</span> grade)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.rank = rank;</span><br><span class="line">        <span class="built_in">this</span>.grade = grade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getRank</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> rank;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRank</span><span class="params">(<span class="type">int</span> rank)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.rank = rank;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">getGrade</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> grade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setGrade</span><span class="params">(<span class="type">double</span> grade)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.grade = grade;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    原则实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(ApiTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_Principal</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">Principal</span> <span class="variable">principal</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Principal</span>();</span><br><span class="line">        Map&lt;String, Object&gt; map = principal.queryClazzInfo(<span class="string">&quot;3年1班&quot;</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;查询结果：&#123;&#125;&quot;</span>, JSON.toJSONString(map));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">校长：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Principal</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Teacher</span> <span class="variable">teacher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Teacher</span>(<span class="string">&quot;丽华&quot;</span>, <span class="string">&quot;3年1班&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询班级信息，总分数、学生人数、平均值</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">queryClazzInfo</span><span class="params">(String clazzId)</span> &#123;</span><br><span class="line">        <span class="comment">// 获取班级信息；学生总人数、总分、平均分</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">stuCount</span> <span class="operator">=</span> teacher.clazzStudentCount();</span><br><span class="line">        <span class="type">double</span> <span class="variable">totalScore</span> <span class="operator">=</span> teacher.clazzTotalScore();</span><br><span class="line">        <span class="type">double</span> <span class="variable">averageScore</span> <span class="operator">=</span> teacher.clazzAverageScore();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 组装对象，实际业务开发会有对应的类</span></span><br><span class="line">        Map&lt;String, Object&gt; mapObj = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        mapObj.put(<span class="string">&quot;班级&quot;</span>, teacher.getClazz());</span><br><span class="line">        mapObj.put(<span class="string">&quot;老师&quot;</span>, teacher.getName());</span><br><span class="line">        mapObj.put(<span class="string">&quot;学生人数&quot;</span>, stuCount);</span><br><span class="line">        mapObj.put(<span class="string">&quot;班级总分数&quot;</span>, totalScore);</span><br><span class="line">        mapObj.put(<span class="string">&quot;班级平均分&quot;</span>, averageScore);</span><br><span class="line">        <span class="keyword">return</span> mapObj;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">老师：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Teacher</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;                <span class="comment">// 老师名称</span></span><br><span class="line">    <span class="keyword">private</span> String clazz;               <span class="comment">// 班级</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;Student&gt; studentList;  <span class="comment">// 学生</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Teacher</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Teacher</span><span class="params">(String name, String clazz)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.clazz = clazz;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        studentList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;花花&quot;</span>, <span class="number">10</span>, <span class="number">589</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;豆豆&quot;</span>, <span class="number">54</span>, <span class="number">356</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;秋雅&quot;</span>, <span class="number">23</span>, <span class="number">439</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;皮皮&quot;</span>, <span class="number">2</span>, <span class="number">665</span>));</span><br><span class="line">        studentList.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;蛋蛋&quot;</span>, <span class="number">19</span>, <span class="number">502</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 总分</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">clazzTotalScore</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">totalScore</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Student stu : studentList) &#123;</span><br><span class="line">            totalScore += stu.getGrade();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> totalScore;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 平均分</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">clazzAverageScore</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">totalScore</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Student stu : studentList) &#123;</span><br><span class="line">            totalScore += stu.getGrade();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> totalScore / studentList.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 班级人数</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">clazzStudentCount</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> studentList.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Student&gt; <span class="title function_">getStudentList</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> studentList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getClazz</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> clazz;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">学生：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Student</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;    <span class="comment">// 学生姓名</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> rank;       <span class="comment">// 考试排名(总排名)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">double</span> grade;   <span class="comment">// 考试分数(总分)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Student</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Student</span><span class="params">(String name, <span class="type">int</span> rank, <span class="type">double</span> grade)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.rank = rank;</span><br><span class="line">        <span class="built_in">this</span>.grade = grade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getRank</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> rank;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRank</span><span class="params">(<span class="type">int</span> rank)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.rank = rank;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">getGrade</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> grade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setGrade</span><span class="params">(<span class="type">double</span> grade)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.grade = grade;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<p><strong>接口隔离原则：</strong></p>
+<p>​    <strong>原则定义：</strong></p>
+<p>​            要为各个类建立它们需要的专用接口，而不要试图去建立一个很庞大的接口供所有依赖它的类去调用。</p>
+<p>​            接口隔离原则和单一职责都是为了提高类的内聚性、降低它们之间的耦合性，体现了封装的思想，但两者是不同的：</p>
+<p>​                单一职责原则注重的是职责，而接口隔离原则注重的是对接口依赖的隔离。</p>
+<p>​                单一职责原则主要是约束类，它针对的是程序中的实现和细节；接口隔离原则主要约束接口，主要针对抽象和程序整体框架的构建。</p>
+<p>​    <strong>好处：</strong></p>
+<p>​        接口隔离原则是为了约束接口、降低类对接口的依赖性，遵循接口隔离原则有以下 5 个优点。</p>
+<p>​            1.    将臃肿庞大的接口分解为多个粒度小的接口，可以预防外来变更的扩散，提高系统的灵活性和可维护性。</p>
+<p>​            2.    接口隔离提高了系统的内聚性，减少了对外交互，降低了系统的耦合性。</p>
+<p>​            3.    如果接口的粒度大小定义合理，能够保证系统的稳定性；</p>
+<p>​            4.    使用多个专门的接口还能够体现对象的层次，因为可以通过接口的继承，实现对总接口的定义。</p>
+<p>​            5.    能减少项目工程中的代码冗余。过大的大接口里面通常放置许多不用的方法，当实现这个接口的时候，被迫设计冗余的代码。</p>
+<p>​        <strong>缺点：</strong></p>
+<p>​            如果定义过小，则会造成接口数量过多，使设计复杂化；如果定义太大，灵活性降低，无法提供定制服务，给整体项目带来无法预料的风险。</p>
+<p>​        <strong>模拟场景：</strong></p>
+<p>​            王者荣耀：射箭、隐袭、沉默、眩晕</p>
+<p>​        <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8B%EF%BC%89/%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99.png" alt="接口隔离原则"></p>
+<p>​        <strong>代码：</strong></p>
+<p>​            原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_ISkill</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">// 后裔</span></span><br><span class="line">        <span class="type">HeroHouYi</span> <span class="variable">heroHouYi</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HeroHouYi</span>();</span><br><span class="line">        heroHouYi.doArchery();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 廉颇</span></span><br><span class="line">        <span class="type">HeroLianPo</span> <span class="variable">heroLianPo</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HeroLianPo</span>();</span><br><span class="line">        heroLianPo.doInvisible();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">技能接口：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ISkill</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 射箭</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doArchery</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 隐袭</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doInvisible</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 沉默</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doSilent</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 眩晕</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doVertigo</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">实现-后裔：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HeroHouYi</span> <span class="keyword">implements</span> <span class="title class_">ISkill</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doArchery</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;后裔的灼日之矢&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doInvisible</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;后裔的隐身技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doSilent</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;后裔的沉默技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doVertigo</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 无此技能的实现</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">实现-廉颇：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HeroLianPo</span> <span class="keyword">implements</span> <span class="title class_">ISkill</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doArchery</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 无此技能的实现</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doInvisible</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;廉颇的隐身技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doSilent</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;廉颇的沉默技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doVertigo</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;廉颇的眩晕技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        原则实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_ISkill</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">// 后裔</span></span><br><span class="line">        <span class="type">HeroHouYi</span> <span class="variable">heroHouYi</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HeroHouYi</span>();</span><br><span class="line">        heroHouYi.doArchery();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 廉颇</span></span><br><span class="line">        <span class="type">HeroLianPo</span> <span class="variable">heroLianPo</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HeroLianPo</span>();</span><br><span class="line">        heroLianPo.doInvisible();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">技能接口-射箭：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ISkillArchery</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 射箭</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doArchery</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">技能接口-隐袭：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ISkillInvisible</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 隐袭</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doInvisible</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">技能接口-眩晕：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ISkillVertigo</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 眩晕</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doVertigo</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">技能接口-沉默：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ISkillSilent</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 沉默</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">doSilent</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">实现-后裔：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HeroHouYi</span> <span class="keyword">implements</span> <span class="title class_">ISkillArchery</span>, ISkillInvisible, ISkillSilent &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doArchery</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;后裔的灼日之矢&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doInvisible</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;后裔的隐身技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doSilent</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;后裔的沉默技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">实现-廉颇：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HeroLianPo</span> <span class="keyword">implements</span> <span class="title class_">ISkillInvisible</span>, ISkillSilent, ISkillVertigo &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doInvisible</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;廉颇的隐身技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doSilent</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;廉颇的沉默技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doVertigo</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;廉颇的眩晕技能&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<p><strong>依赖倒置原则：</strong></p>
+<p>​    <strong>原则定义：</strong></p>
+<p>​            高层模块不应该依赖低层模块，两者都应该依赖其抽象；抽象不应该依赖细节，细节应该依赖抽象。其核心思想是：要面向接口编程，不要面向实现编程。</p>
+<p>​            依赖倒置原则是实现开闭原则的重要途径之一，它降低了客户与实现模块之间的耦合。</p>
+<p>​            由于在软件设计中，细节具有多变性，而抽象层则相对稳定，因此以抽象为基础搭建起来的架构要比以细节为基础搭建起来的架构要稳定得多。这里的抽象指的是接口或者抽象类，而细节是指具体的实现类。</p>
+<p>​            使用接口或者抽象类的目的是制定好规范和契约，而不去涉及任何具体的操作，把展现细节的任务交给它们的实现类去完成。</p>
+<p>​    <strong>好处：</strong></p>
+<p>​            依赖倒置原则可以降低类间的耦合性。</p>
+<p>​            依赖倒置原则可以提高系统的稳定性。</p>
+<p>​            依赖倒置原则可以减少并行开发引起的风险。</p>
+<p>​            依赖倒置原则可以提高代码的可读性和可维护性。</p>
+<p>​            依赖倒置原则的目的是通过要面向接口的编程来降低类间的耦合性，所以我们在实际编程中只要遵循以下4点，就能在项目中满足这个规则。</p>
+<p>​                1.    每个类尽量提供接口或抽象类，或者两者都具备。</p>
+<p>​                2.    变量的声明类型尽量是接口或者是抽象类。</p>
+<p>​                3.    任何类都不应该从具体类派生。</p>
+<p>​                4.    使用继承时尽量遵循里氏替换原则。</p>
+<p>​        <strong>缺点：</strong></p>
+<p>​    </p>
+<p>​        <strong>模拟场景：</strong></p>
+<p>​                随机抽奖、权重抽奖</p>
+<p>​                实现方式与策略模式一致</p>
+<p>​        <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8B%EF%BC%89/%E4%BE%9D%E8%B5%96%E5%AF%BC%E8%87%B4%E5%8E%9F%E5%88%99.png" alt="依赖倒置法则"></p>
+<p>​    <strong>代码：</strong></p>
+<p>​        原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(ApiTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_DrawControl</span><span class="params">()</span>&#123;</span><br><span class="line">        List&lt;BetUser&gt; betUserList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;花花&quot;</span>, <span class="number">65</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;豆豆&quot;</span>, <span class="number">43</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;小白&quot;</span>, <span class="number">72</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;笨笨&quot;</span>, <span class="number">89</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;丑蛋&quot;</span>, <span class="number">10</span>));</span><br><span class="line"></span><br><span class="line">        <span class="type">DrawControl</span> <span class="variable">drawControl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DrawControl</span>();</span><br><span class="line">        List&lt;BetUser&gt; prizeRandomUserList = drawControl.doDrawRandom(betUserList, <span class="number">3</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;随机抽奖，中奖用户名单：&#123;&#125;&quot;</span>, JSON.toJSON(prizeRandomUserList));</span><br><span class="line"></span><br><span class="line">        List&lt;BetUser&gt; prizeWeightUserList = drawControl.doDrawWeight(betUserList, <span class="number">3</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;权重抽奖，中奖用户名单：&#123;&#125;&quot;</span>, JSON.toJSON(prizeWeightUserList));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">控制层：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DrawControl</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 随机抽取指定数量的用户，作为中奖用户</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;BetUser&gt; <span class="title function_">doDrawRandom</span><span class="params">(List&lt;BetUser&gt; list, <span class="type">int</span> count)</span> &#123;</span><br><span class="line">        <span class="comment">// 集合数量很小直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (list.size() &lt;= count) <span class="keyword">return</span> list;</span><br><span class="line">        <span class="comment">// 乱序集合</span></span><br><span class="line">        Collections.shuffle(list);</span><br><span class="line">        <span class="comment">// 取出指定数量的中奖用户</span></span><br><span class="line">        List&lt;BetUser&gt; prizeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(count);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            prizeList.add(list.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> prizeList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 权重排名获取指定数量的用户，作为中奖用户</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;BetUser&gt; <span class="title function_">doDrawWeight</span><span class="params">(List&lt;BetUser&gt; list, <span class="type">int</span> count)</span> &#123;</span><br><span class="line">        <span class="comment">// 按照权重排序</span></span><br><span class="line">        list.sort((o1, o2) -&gt; &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">e</span> <span class="operator">=</span> o2.getUserWeight() - o1.getUserWeight();</span><br><span class="line">            <span class="keyword">if</span> (<span class="number">0</span> == e) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">return</span> e &gt; <span class="number">0</span> ? <span class="number">1</span> : -<span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">// 取出指定数量的中奖用户</span></span><br><span class="line">        List&lt;BetUser&gt; prizeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(count);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            prizeList.add(list.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> prizeList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">用户：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BetUser</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String userName;  <span class="comment">// 用户姓名</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> userWeight;   <span class="comment">// 用户权重</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BetUser</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BetUser</span><span class="params">(String userName, <span class="type">int</span> userWeight)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userName = userName;</span><br><span class="line">        <span class="built_in">this</span>.userWeight = userWeight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUserName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserName</span><span class="params">(String userName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userName = userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getUserWeight</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userWeight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserWeight</span><span class="params">(<span class="type">int</span> userWeight)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userWeight = userWeight;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    原则实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(ApiTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_DrawControl</span><span class="params">()</span> &#123;</span><br><span class="line">        List&lt;BetUser&gt; betUserList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;花花&quot;</span>, <span class="number">65</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;豆豆&quot;</span>, <span class="number">43</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;小白&quot;</span>, <span class="number">72</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;笨笨&quot;</span>, <span class="number">89</span>));</span><br><span class="line">        betUserList.add(<span class="keyword">new</span> <span class="title class_">BetUser</span>(<span class="string">&quot;丑蛋&quot;</span>, <span class="number">10</span>));</span><br><span class="line"></span><br><span class="line">        <span class="type">DrawControl</span> <span class="variable">drawControl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DrawControl</span>();</span><br><span class="line">        List&lt;BetUser&gt; prizeRandomUserList = drawControl.doDraw(<span class="keyword">new</span> <span class="title class_">DrawRandom</span>(), betUserList, <span class="number">3</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;随机抽奖，中奖用户名单：&#123;&#125;&quot;</span>, JSON.toJSON(prizeRandomUserList));</span><br><span class="line"></span><br><span class="line">        List&lt;BetUser&gt; prizeWeightUserList = drawControl.doDraw(<span class="keyword">new</span> <span class="title class_">DrawWeightRank</span>(), betUserList, <span class="number">3</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;权重抽奖，中奖用户名单：&#123;&#125;&quot;</span>, JSON.toJSON(prizeWeightUserList));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">接口：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">IDraw</span> &#123;</span><br><span class="line"></span><br><span class="line">    List&lt;BetUser&gt; <span class="title function_">prize</span><span class="params">(List&lt;BetUser&gt; list, <span class="type">int</span> count)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">抽奖控制：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DrawControl</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> IDraw draw;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;BetUser&gt; <span class="title function_">doDraw</span><span class="params">(IDraw draw, List&lt;BetUser&gt; betUserList, <span class="type">int</span> count)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> draw.prize(betUserList, count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">随机抽奖：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DrawRandom</span> <span class="keyword">implements</span> <span class="title class_">IDraw</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;BetUser&gt; <span class="title function_">prize</span><span class="params">(List&lt;BetUser&gt; list, <span class="type">int</span> count)</span> &#123;</span><br><span class="line">        <span class="comment">// 集合数量很小直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (list.size() &lt;= count) <span class="keyword">return</span> list;</span><br><span class="line">        <span class="comment">// 乱序集合</span></span><br><span class="line">        Collections.shuffle(list);</span><br><span class="line">        <span class="comment">// 取出指定数量的中奖用户</span></span><br><span class="line">        List&lt;BetUser&gt; prizeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(count);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            prizeList.add(list.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> prizeList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">权重抽奖：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DrawWeightRank</span> <span class="keyword">implements</span> <span class="title class_">IDraw</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;BetUser&gt; <span class="title function_">prize</span><span class="params">(List&lt;BetUser&gt; list, <span class="type">int</span> count)</span> &#123;</span><br><span class="line">        <span class="comment">// 按照权重排序</span></span><br><span class="line">        list.sort((o1, o2) -&gt; &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">e</span> <span class="operator">=</span> o2.getUserWeight() - o1.getUserWeight();</span><br><span class="line">            <span class="keyword">if</span> (<span class="number">0</span> == e) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">return</span> e &gt; <span class="number">0</span> ? <span class="number">1</span> : -<span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">// 取出指定数量的中奖用户</span></span><br><span class="line">        List&lt;BetUser&gt; prizeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(count);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            prizeList.add(list.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> prizeList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">用户：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BetUser</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String userName;  <span class="comment">// 用户姓名</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> userWeight;   <span class="comment">// 用户权重</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BetUser</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BetUser</span><span class="params">(String userName, <span class="type">int</span> userWeight)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userName = userName;</span><br><span class="line">        <span class="built_in">this</span>.userWeight = userWeight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUserName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserName</span><span class="params">(String userName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userName = userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getUserWeight</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userWeight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserWeight</span><span class="params">(<span class="type">int</span> userWeight)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userWeight = userWeight;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>​    <strong>多思考，根据业务需求灵活运用，不要生搬硬套！！！！！</strong></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : WU DI <br/>
+        
+        原文链接 : <a href="">http://example.com/2022/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8B%EF%BC%89/</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+    <div class="social-share"
+  style="margin-top: -2rem"
+  data-wechat-qrcode-title="<p>微信扫一扫</p>"
+  data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>"
+   data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter" 
+  
+>
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%A6%82%E5%BF%B5/">
+              #概念
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%80%9D%E8%80%83/">
+              #思考
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/">
+              #...
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/">
+              #六大设计原则
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8B%EF%BC%89/">
+              #第二章（下）
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2022/03/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">设计模式--第二章（上）</a>
+      </div>
+    
+    
+  </nav>
+
+   
+
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a target="_blank" rel="noopener" href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a target="_blank" rel="noopener" href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2022, 2, 1).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>

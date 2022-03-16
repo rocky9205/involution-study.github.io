@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+  
+  <title>设计模式--第二章（上） | INVOLUTION_STUDY</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="设计模式,概念,思考,...,第二章（上）,六大设计原则," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="人生-谁都是第一次">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  
+<script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">INVOLUTION_STUDY.cn</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a 
+              href="/about/"
+              target="_self"
+            >
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/rocky9205" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>设计模式--第二章（上）</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2022-03-15
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+            设计模式
+          </a>
+      </span>
+    
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h3 id="正文："><a href="#正文：" class="headerlink" title="正文："></a>正文：</h3><p><strong>单一职责原则（SRP）：</strong></p>
+<p>​    <strong>原则定义：</strong></p>
+<p>​        该原则提出对象不应该承担太多职责，如果一个对象承担了太多的职责，至少存在以下两个缺点：</p>
+<p>​            1.    一个职责的变化可能会削弱或者抑制这个类实现其他职责的能力；</p>
+<p>​            2.    当客户端需要该对象的某一个职责时，不得不将其他不需要的职责全都包含进来，从而造成冗余代码或代码的浪费。</p>
+<p>​    <strong>好处：</strong></p>
+<p>​        单一职责原则的核心就是控制类的粒度大小、将对象解耦、提高其内聚性。如果遵循单一职责原则将有以下优点。</p>
+<p>​            1.    降低类的复杂度。一个类只负责一项职责，其逻辑肯定要比负责多项职责简单得多。</p>
+<p>​            2.    提高类的可读性。复杂性降低，自然其可读性会提高。</p>
+<p>​            3.    提高系统的可维护性。可读性提高，那自然更容易维护了。</p>
+<p>​            4.    变更引起的风险降低。变更是必然的，如果单一职责原则遵守得好，当修改一个功能时，可以显著降低对其他功能的影响。</p>
+<p>​    <strong>缺点：</strong></p>
+<p>​    <strong>模拟场景：</strong></p>
+<p>​        访客用户、普通用户、VIP用户</p>
+<p>​    <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8A%EF%BC%89/%E5%8D%95%E4%B8%80%E8%81%8C%E8%B4%A3%E5%8E%9F%E5%88%99.png" alt="单一职责原则"></p>
+<p>​    <strong>代码：</strong></p>
+<p>​        原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">测试</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">VideoUserService</span> <span class="variable">service</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VideoUserService</span>();</span><br><span class="line">        service.serveGrade(<span class="string">&quot;VIP用户&quot;</span>);</span><br><span class="line">        service.serveGrade(<span class="string">&quot;普通用户&quot;</span>);</span><br><span class="line">        service.serveGrade(<span class="string">&quot;访客用户&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">视频用户服务：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">VideoUserService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">serveGrade</span><span class="params">(String userType)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;VIP用户&quot;</span>.equals(userType))&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;VIP用户，视频1080P蓝光&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;普通用户&quot;</span>.equals(userType))&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;普通用户，视频720P超清&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;访客用户&quot;</span>.equals(userType))&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;访客用户，视频480P高清&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    原则实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">IVideoUserService</span> <span class="variable">guest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GuestVideoUserService</span>();</span><br><span class="line">        <span class="comment">//访客用户</span></span><br><span class="line">        guest.advertisement();</span><br><span class="line">        guest.definition();</span><br><span class="line">        <span class="comment">//普通用户</span></span><br><span class="line">        <span class="type">IVideoUserService</span> <span class="variable">ordinary</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">OrdinaryVideoUserService</span>();</span><br><span class="line">        ordinary.advertisement();</span><br><span class="line">        ordinary.definition();</span><br><span class="line">        <span class="comment">//vip用户</span></span><br><span class="line">        <span class="type">IVideoUserService</span> <span class="variable">vip</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VipVideoUserService</span>();</span><br><span class="line">        vip.advertisement();</span><br><span class="line">        vip.definition();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">视频用户服务-接口：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">IVideoUserService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">definition</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">advertisement</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">VIP用户-实现：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">VipVideoUserService</span> <span class="keyword">implements</span> <span class="title class_">IVideoUserService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">definition</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;VIP用户，视频1080P蓝光&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">advertisement</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;VIP会员，视频无广告&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">普通用户-实现：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrdinaryVideoUserService</span> <span class="keyword">implements</span> <span class="title class_">IVideoUserService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">definition</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;普通用户，视频720P超清&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">advertisement</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;普通用户，视频有广告&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;  </span><br><span class="line">访客用户-实现：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GuestVideoUserService</span> <span class="keyword">implements</span> <span class="title class_">IVideoUserService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">definition</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;访客用户，视频480P高清&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">advertisement</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;访客用户，视频有广告&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;    </span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<p><strong>开闭原则：</strong></p>
+<p>​    <strong>原则定义：</strong></p>
+<p>​        软件实体应当对扩展开放，对修改关闭（Software entities should be open for extension，but closed for modification），这就是开闭原则的经典定义</p>
+<p>​        这里的软件实体包括以下几个部分：</p>
+<p>​            1.    项目中划分出的模块</p>
+<p>​            2.    类与接口</p>
+<p>​            3.    方法        </p>
+<p>​    <strong>好处：</strong></p>
+<p>​        开闭原则是面向对象程序设计的终极目标，它使软件实体拥有一定的适应性和灵活性的同时具备稳定性和延续性。具体来说，其作用如下。</p>
+<p>​            1. 对软件测试的影响</p>
+<p>​                软件遵守开闭原则的话，软件测试时只需要对扩展的代码进行测试就可以了，因为原有的测试代码仍然能够正常运行。</p>
+<p>​            2. 可以提高代码的可复用性</p>
+<p>​                粒度越小，被复用的可能性就越大；在面向对象的程序设计中，根据原子和抽象编程可以提高代码的可复用性。</p>
+<p>​            3. 可以提高软件的可维护性</p>
+<p>​                遵守开闭原则的软件，其稳定性高和延续性强，从而易于扩展和维护。</p>
+<p>​        <strong>缺点：</strong></p>
+<p>​        <strong>模拟场景：</strong></p>
+<p>​            计算面积：长方形、三角形、圆形</p>
+<p>​        <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8A%EF%BC%89/%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99.png" alt="开闭原则"></p>
+<p>​        <strong>代码：</strong></p>
+<p>​            原则实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_CalculationAreaExt</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">ICalculationArea</span> <span class="variable">area</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CalculationAreaExt</span>();</span><br><span class="line">        <span class="type">double</span> <span class="variable">circular</span> <span class="operator">=</span> area.circular(<span class="number">10</span>);</span><br><span class="line">        System.out.println(circular);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">计算面积-接口：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ICalculationArea</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算面积，长方形</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> x 长</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> y 宽</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 面积</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">double</span> <span class="title function_">rectangle</span><span class="params">(<span class="type">double</span> x, <span class="type">double</span> y)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算面积，三角形</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> x 边长x</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> y 边长y</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> z 边长z</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>  面积</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 海伦公式：S=√[p(p-a)(p-b)(p-c)] 其中：p=(a+b+c)/2</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">double</span> <span class="title function_">triangle</span><span class="params">(<span class="type">double</span> x, <span class="type">double</span> y, <span class="type">double</span> z)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算面积，圆形</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> r 半径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 面积</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 圆面积公式：S=πr²</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">double</span> <span class="title function_">circular</span><span class="params">(<span class="type">double</span> r)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">面积计算-实现：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CalculationArea</span> <span class="keyword">implements</span> <span class="title class_">ICalculationArea</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">double</span> π = <span class="number">3.14D</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">rectangle</span><span class="params">(<span class="type">double</span> x, <span class="type">double</span> y)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> x * y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">triangle</span><span class="params">(<span class="type">double</span> x, <span class="type">double</span> y, <span class="type">double</span> z)</span> &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">p</span> <span class="operator">=</span> (x + y + z) / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">return</span> Math.sqrt(p * (p - x) * (p - y) * (p - z));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">circular</span><span class="params">(<span class="type">double</span> r)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> π * r * r;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">拓展继承-实现自己的需求：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CalculationAreaExt</span> <span class="keyword">extends</span> <span class="title class_">CalculationArea</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">double</span> π = <span class="number">3.141592653D</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">circular</span><span class="params">(<span class="type">double</span> r)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> π * r * r;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<p><strong>里式替换原则：</strong></p>
+<p>​    <strong>原则定义：</strong></p>
+<p>​        继承必须确保超类所拥有的性质在子类中依然成立（兼容性、维护性、扩展性）</p>
+<p>​        里氏替换原则的主要作用如下。</p>
+<p>​            1.    里氏替换原则是实现开闭原则的重要方式之一。</p>
+<p>​            2.    它克服了继承中重写父类造成的可复用性变差的缺点。</p>
+<p>​            3.    它是动作正确性的保证。即类的扩展不会给已有的系统引入新的错误，降低了代码出错的可能性。</p>
+<p>​            4.    加强程序的健壮性，同时变更时可以做到非常好的兼容性，提高程序的维护性、可扩展性，降低需求变更时引入的风险。</p>
+<p>​        实现：</p>
+<p>​            1.    类可以实现父类的抽象方法，但不能覆盖父类的非抽象方法</p>
+<p>​            2.    子类中可以增加自己特有的方法</p>
+<p>​            3.    当子类的方法重载父类的方法时，方法的前置条件（即方法的输入参数）要比父类的方法更宽松</p>
+<p>​            4.    当子类的方法实现父类的方法时（重写&#x2F;重载或实现抽象方法），方法的后置条件（即方法的的输出&#x2F;返回值）要比父类的方法更严格或相等</p>
+<p>​        <strong>好处：</strong></p>
+<p>​            当公共能力或抽象能力后期增加新的功能的时候，我们可以快速的迭代并使用</p>
+<p>​        <strong>缺点：</strong></p>
+<p>​        <strong>模拟场景：</strong></p>
+<p>​                银行卡：信用卡、储蓄卡、地铁卡、饭卡</p>
+<p>​        <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%87%8C%E5%BC%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99.png" alt="里式替换原则"></p>
+<p>​    <strong>代码：</strong></p>
+<p>​        原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(ApiTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_CashCard</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">CashCard</span> <span class="variable">cashCard</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CashCard</span>();</span><br><span class="line">        <span class="comment">// 提现</span></span><br><span class="line">        cashCard.withdrawal(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">        <span class="comment">// 储蓄</span></span><br><span class="line">        cashCard.recharge(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">        <span class="comment">// 交易流水</span></span><br><span class="line">        List&lt;String&gt; tradeFlow = cashCard.tradeFlow();</span><br><span class="line">        logger.info(<span class="string">&quot;查询交易流水，&#123;&#125;&quot;</span>, JSON.toJSONString(tradeFlow));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_CreditCard</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">CreditCard</span> <span class="variable">creditCard</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CreditCard</span>();</span><br><span class="line">        <span class="comment">// 支付</span></span><br><span class="line">        creditCard.withdrawal(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">        <span class="comment">// 还款</span></span><br><span class="line">        creditCard.recharge(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">        <span class="comment">// 交易流水</span></span><br><span class="line">        List&lt;String&gt; tradeFlow = creditCard.tradeFlow();</span><br><span class="line">        logger.info(<span class="string">&quot;查询交易流水，&#123;&#125;&quot;</span>, JSON.toJSONString(tradeFlow));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">模拟储蓄卡功能：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CashCard</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(CashCard.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提现</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 状态码 0000成功、0001失败、0002重复</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">withdrawal</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟支付成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;提现成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;0000&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 储蓄</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">recharge</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟充值成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;储蓄成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;0000&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 交易流水查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 交易流水</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;String&gt; <span class="title function_">tradeFlow</span><span class="params">()</span> &#123;</span><br><span class="line">        logger.info(<span class="string">&quot;交易流水查询成功&quot;</span>);</span><br><span class="line">        List&lt;String&gt; tradeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;();</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,100.00&quot;</span>);</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,80.00&quot;</span>);</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,76.50&quot;</span>);</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,126.00&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> tradeList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">模拟信用卡功能：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CreditCard</span> <span class="keyword">extends</span> <span class="title class_">CashCard</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(CashCard.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">withdrawal</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 校验</span></span><br><span class="line">        <span class="keyword">if</span> (amount.compareTo(<span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">1000</span>)) &gt;= <span class="number">0</span>)&#123;</span><br><span class="line">            logger.info(<span class="string">&quot;贷款金额校验(限额1000元)，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;0001&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 模拟生成贷款单</span></span><br><span class="line">        logger.info(<span class="string">&quot;生成贷款单，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="comment">// 模拟支付成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;贷款成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;0000&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">recharge</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟生成还款单</span></span><br><span class="line">        logger.info(<span class="string">&quot;生成还款单，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="comment">// 模拟还款成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;还款成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;0000&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;String&gt; <span class="title function_">tradeFlow</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.tradeFlow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        原则实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br></pre></td><td class="code"><pre><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(ApiTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_bankCard</span><span class="params">()</span> &#123;</span><br><span class="line">        logger.info(<span class="string">&quot;里氏替换前，CashCard类：&quot;</span>);</span><br><span class="line">        <span class="type">CashCard</span> <span class="variable">bankCard</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CashCard</span>(<span class="string">&quot;6214567800989876&quot;</span>, <span class="string">&quot;2022-03-05&quot;</span>);</span><br><span class="line">        <span class="comment">// 提现</span></span><br><span class="line">        bankCard.withdrawal(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">        <span class="comment">// 储蓄</span></span><br><span class="line">        bankCard.recharge(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        logger.info(<span class="string">&quot;里氏替换后，CreditCard类：&quot;</span>);</span><br><span class="line">        <span class="type">CashCard</span> <span class="variable">creditCard</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CreditCard</span>(<span class="string">&quot;6214567800989876&quot;</span>, <span class="string">&quot;2022-03-05&quot;</span>);</span><br><span class="line">        <span class="comment">// 提现</span></span><br><span class="line">        creditCard.withdrawal(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">1000000</span>));</span><br><span class="line">        <span class="comment">// 储蓄</span></span><br><span class="line">        creditCard.recharge(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_CreditCard</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">CreditCard</span> <span class="variable">creditCard</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CreditCard</span>(<span class="string">&quot;6214567800989876&quot;</span>, <span class="string">&quot;2022-03-05&quot;</span>);</span><br><span class="line">        <span class="comment">// 支付，贷款</span></span><br><span class="line">        creditCard.loan(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">        <span class="comment">// 还款</span></span><br><span class="line">        creditCard.repayment(<span class="string">&quot;100001&quot;</span>, <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">100</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">银行卡-顶层抽象类：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">BankCard</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(BankCard.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String cardNo;   <span class="comment">// 卡号</span></span><br><span class="line">    <span class="keyword">private</span> String cardDate; <span class="comment">// 开卡时间</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BankCard</span><span class="params">(String cardNo, String cardDate)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.cardNo = cardNo;</span><br><span class="line">        <span class="built_in">this</span>.cardDate = cardDate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">abstract</span> <span class="type">boolean</span> <span class="title function_">rule</span><span class="params">(BigDecimal amount)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 正向入账，+ 钱</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">positive</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 入款成功，存款、还款</span></span><br><span class="line">        logger.info(<span class="string">&quot;卡号&#123;&#125; 入款成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, cardNo, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;0000&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 逆向入账，- 钱</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">negative</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 入款成功，存款、还款</span></span><br><span class="line">        logger.info(<span class="string">&quot;卡号&#123;&#125; 出款成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, cardNo, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;0000&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 交易流水查询</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 交易流水</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;String&gt; <span class="title function_">tradeFlow</span><span class="params">()</span> &#123;</span><br><span class="line">        logger.info(<span class="string">&quot;交易流水查询成功&quot;</span>);</span><br><span class="line">        List&lt;String&gt; tradeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;();</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,100.00&quot;</span>);</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,80.00&quot;</span>);</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,76.50&quot;</span>);</span><br><span class="line">        tradeList.add(<span class="string">&quot;100001,126.00&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> tradeList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getCardNo</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> cardNo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getCardDate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> cardDate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">模拟储蓄卡：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CashCard</span> <span class="keyword">extends</span> <span class="title class_">BankCard</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(CashCard.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CashCard</span><span class="params">(String cardNo, String cardDate)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(cardNo, cardDate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">rule</span><span class="params">(BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提现</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 状态码 0000成功、0001失败、0002重复</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">withdrawal</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟支付成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;提现成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.negative(orderId, amount);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 储蓄</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">recharge</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟充值成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;储蓄成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.positive(orderId, amount);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 风险校验</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> cardNo  卡号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 状态</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">checkRisk</span><span class="params">(String cardNo, String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟风控校验</span></span><br><span class="line">        logger.info(<span class="string">&quot;风控校验，卡号：&#123;&#125; 单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, cardNo, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">模拟信用卡：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CreditCard</span> <span class="keyword">extends</span> <span class="title class_">CashCard</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(CreditCard.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CreditCard</span><span class="params">(String cardNo, String cardDate)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(cardNo, cardDate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">rule2</span><span class="params">(BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> amount.compareTo(<span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="number">1000</span>)) &lt;= <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提现，信用卡贷款</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 状态码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">loan</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">rule</span> <span class="operator">=</span> rule2(amount);</span><br><span class="line">        <span class="keyword">if</span> (!rule) &#123;</span><br><span class="line">            logger.info(<span class="string">&quot;生成贷款单失败，金额超限。单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;0001&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 模拟生成贷款单</span></span><br><span class="line">        logger.info(<span class="string">&quot;生成贷款单，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="comment">// 模拟支付成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;贷款成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.negative(orderId, amount);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 还款，信用卡还款</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> orderId 单号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> amount  金额</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 状态码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">repayment</span><span class="params">(String orderId, BigDecimal amount)</span> &#123;</span><br><span class="line">        <span class="comment">// 模拟生成还款单</span></span><br><span class="line">        logger.info(<span class="string">&quot;生成还款单，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="comment">// 模拟还款成功</span></span><br><span class="line">        logger.info(<span class="string">&quot;还款成功，单号：&#123;&#125; 金额：&#123;&#125;&quot;</span>, orderId, amount);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.positive(orderId, amount);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>​    <strong>多思考，根据业务需求灵活运用，不要生搬硬套！！！！！</strong></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : WU DI <br/>
+        
+        原文链接 : <a href="">http://example.com/2022/03/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8A%EF%BC%89/</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+    <div class="social-share"
+  style="margin-top: -2rem"
+  data-wechat-qrcode-title="<p>微信扫一扫</p>"
+  data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>"
+   data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter" 
+  
+>
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%A6%82%E5%BF%B5/">
+              #概念
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%80%9D%E8%80%83/">
+              #思考
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/">
+              #...
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8A%EF%BC%89/">
+              #第二章（上）
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/">
+              #六大设计原则
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2022/03/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%88%9D%E7%AB%A0/" target="_self">设计模式--初章</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/2022/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">设计模式--第二章（下）</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a target="_blank" rel="noopener" href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a target="_blank" rel="noopener" href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2022, 2, 1).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>
