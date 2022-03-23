@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+  
+  <title>设计模式--第七章 | INVOLUTION_STUDY</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="设计模式,思考,...,第七章,原型模式,创建型模式,概念ﬁ," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="人生-谁都是第一次">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  
+<script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">INVOLUTION_STUDY.cn</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a 
+              href="/about/"
+              target="_self"
+            >
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/rocky9205" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>设计模式--第七章</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2022-03-21
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+            设计模式
+          </a>
+      </span>
+    
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h3 id="正文："><a href="#正文：" class="headerlink" title="正文："></a>正文：</h3><p><strong>建造者模式：</strong></p>
+<p>​    <strong>定义：</strong></p>
+<p>​            是用于创建重复的对象，同时又能保证性能。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</p>
+<p>​    <strong>好处：</strong></p>
+<p>​            Java 自带的原型模式基于内存二进制流的复制，在性能上比直接 new 一个对象更加优良。</p>
+<p>​            可以使用深克隆方式保存对象的状态，使用原型模式将对象复制一份，并将其状态保存起来，简化了创建对象的过程，以便在需要的时候使用（例如恢复到历史某一状态），可辅助实现撤销操作。</p>
+<p>​    <strong>缺点：</strong></p>
+<p>​            需要为每一个类都配置一个 clone 方法</p>
+<p>​            clone 方法位于类的内部，当对已有类进行改造的时候，需要修改代码，违背了开闭原则。</p>
+<p>​            当实现深克隆时，需要编写较为复杂的代码，而且当对象之间存在多重嵌套引用时，为了实现深克隆，每一层对象对应的类都必须支持深克隆，实现起来会比较麻烦。因此，深克隆、浅克隆需要运用得当。</p>
+<p>​    <strong>模拟场景：</strong></p>
+<p>​            上机考试多套试卷，每人题目和答案乱序排列场景</p>
+<p>​    <strong>示例：</strong></p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%B8%83%E7%AB%A0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%B8%83%E7%AB%A0.png" alt="原型模式"></p>
+<p>​    <strong>代码：</strong></p>
+<p>​        基础：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">解答题：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AnswerQuestion</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;  <span class="comment">// 问题</span></span><br><span class="line">    <span class="keyword">private</span> String key;   <span class="comment">// 答案</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AnswerQuestion</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AnswerQuestion</span><span class="params">(String name, String key)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getKey</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setKey</span><span class="params">(String key)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.key = key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">单选题：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChoiceQuestion</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;                 <span class="comment">// 题目</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; option;  <span class="comment">// 选项；A、B、C、D</span></span><br><span class="line">    <span class="keyword">private</span> String key;                  <span class="comment">// 答案；B</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ChoiceQuestion</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ChoiceQuestion</span><span class="params">(String name, Map&lt;String, String&gt; option, String key)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.option = option;</span><br><span class="line">        <span class="built_in">this</span>.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, String&gt; <span class="title function_">getOption</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> option;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setOption</span><span class="params">(Map&lt;String, String&gt; option)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.option = option;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getKey</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setKey</span><span class="params">(String key)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.key = key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">普通方式实现:</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">QuestionBankController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">createPaper</span><span class="params">(String candidate, String number)</span> &#123;</span><br><span class="line"></span><br><span class="line">        List&lt;ChoiceQuestion&gt; choiceQuestionList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;ChoiceQuestion&gt;();</span><br><span class="line"></span><br><span class="line">        choiceQuestionList.add(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;JAVA所定义的版本中不包括&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;JAVA2 EE&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;JAVA2 Card&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;JAVA2 ME&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;JAVA2 HE&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;E&quot;</span>, <span class="string">&quot;JAVA2 SE&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;D&quot;</span>));</span><br><span class="line"></span><br><span class="line">        choiceQuestionList.add(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;下列说法正确的是&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;JAVA程序的main方法必须写在类里面&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;JAVA程序中可以有多个main方法&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;JAVA程序中类名必须与文件名一样&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;JAVA程序的main方法中如果只有一条语句，可以不用&#123;&#125;(大括号)括起来&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;A&quot;</span>));</span><br><span class="line">        choiceQuestionList.add(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;变量命名规范说法正确的是&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;变量由字母、下划线、数字、$符号随意组成；&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;变量不能以数字作为开头；&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;A和a在java中是同一个变量；&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;不同类型的变量，可以起相同的名字；&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;B&quot;</span>));</span><br><span class="line">        choiceQuestionList.add(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;以下()不是合法的标识符&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;STRING&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;x3x;&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;void&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;de$f&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;C&quot;</span>));</span><br><span class="line">        choiceQuestionList.add(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;表达式(11+3*8)/4%3的值是&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;31&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;1&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;2&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;D&quot;</span>));</span><br><span class="line"></span><br><span class="line">        List&lt;AnswerQuestion&gt; answerQuestionList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;AnswerQuestion&gt;();</span><br><span class="line">        answerQuestionList.add(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;小红马和小黑马生的小马几条腿&quot;</span>, <span class="string">&quot;4条腿&quot;</span>));</span><br><span class="line">        answerQuestionList.add(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;铁棒打头疼还是木棒打头疼&quot;</span>, <span class="string">&quot;头最疼&quot;</span>));</span><br><span class="line">        answerQuestionList.add(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;什么床不能睡觉&quot;</span>, <span class="string">&quot;牙床&quot;</span>));</span><br><span class="line">        answerQuestionList.add(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;为什么好马不吃回头草&quot;</span>, <span class="string">&quot;后面的草没了&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 输出结果</span></span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">detail</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;考生：&quot;</span> + candidate + <span class="string">&quot;\r\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;考号：&quot;</span> + number + <span class="string">&quot;\r\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;--------------------------------------------\r\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;一、选择题&quot;</span> + <span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> <span class="number">0</span>; idx &lt; choiceQuestionList.size(); idx++) &#123;</span><br><span class="line">            detail.append(<span class="string">&quot;第&quot;</span>).append(idx + <span class="number">1</span>).append(<span class="string">&quot;题：&quot;</span>).append(choiceQuestionList.get(idx).getName()).append(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">            Map&lt;String, String&gt; option = choiceQuestionList.get(idx).getOption();</span><br><span class="line">            <span class="keyword">for</span> (String key : option.keySet()) &#123;</span><br><span class="line">                detail.append(key).append(<span class="string">&quot;：&quot;</span>).append(option.get(key)).append(<span class="string">&quot;\r\n&quot;</span>);;</span><br><span class="line">            &#125;</span><br><span class="line">            detail.append(<span class="string">&quot;答案：&quot;</span>).append(choiceQuestionList.get(idx).getKey()).append(<span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        detail.append(<span class="string">&quot;二、问答题&quot;</span> + <span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> <span class="number">0</span>; idx &lt; answerQuestionList.size(); idx++) &#123;</span><br><span class="line">            detail.append(<span class="string">&quot;第&quot;</span>).append(idx + <span class="number">1</span>).append(<span class="string">&quot;题：&quot;</span>).append(answerQuestionList.get(idx).getName()).append(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">            detail.append(<span class="string">&quot;答案：&quot;</span>).append(answerQuestionList.get(idx).getKey()).append(<span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> detail.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">测试：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_QuestionBankController</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">QuestionBankController</span> <span class="variable">questionBankController</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">QuestionBankController</span>();</span><br><span class="line">        System.out.println(questionBankController.createPaper(<span class="string">&quot;花花&quot;</span>, <span class="string">&quot;1000001921032&quot;</span>));</span><br><span class="line">        System.out.println(questionBankController.createPaper(<span class="string">&quot;豆豆&quot;</span>, <span class="string">&quot;1000001921051&quot;</span>));</span><br><span class="line">        System.out.println(questionBankController.createPaper(<span class="string">&quot;大宝&quot;</span>, <span class="string">&quot;1000001921987&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        模式实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br></pre></td><td class="code"><pre><span class="line">考试题答案：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Topic</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; option;  <span class="comment">// 选项；A、B、C、D</span></span><br><span class="line">    <span class="keyword">private</span> String key;           <span class="comment">// 答案；B</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Topic</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Topic</span><span class="params">(Map&lt;String, String&gt; option, String key)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.option = option;</span><br><span class="line">        <span class="built_in">this</span>.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, String&gt; <span class="title function_">getOption</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> option;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setOption</span><span class="params">(Map&lt;String, String&gt; option)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.option = option;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getKey</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setKey</span><span class="params">(String key)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.key = key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">乱序工具类：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TopicRandomUtil</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 乱序Map元素，记录对应答案key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> option 题目</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key    答案</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Topic 乱序后 &#123;A=c., B=d., C=a., D=b.&#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">public</span> Topic <span class="title function_">random</span><span class="params">(Map&lt;String, String&gt; option, String key)</span> &#123;</span><br><span class="line">        Set&lt;String&gt; keySet = option.keySet();</span><br><span class="line">        ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;(keySet);</span><br><span class="line">        Collections.shuffle(keyList);</span><br><span class="line">        HashMap&lt;String, String&gt; optionNew = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;();</span><br><span class="line">        <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">keyNew</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="keyword">for</span> (String next : keySet) &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">randomKey</span> <span class="operator">=</span> keyList.get(idx++);</span><br><span class="line">            <span class="keyword">if</span> (key.equals(next)) &#123;</span><br><span class="line">                keyNew = randomKey;</span><br><span class="line">            &#125;</span><br><span class="line">            optionNew.put(randomKey, option.get(next));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Topic</span>(optionNew, keyNew);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">题库：</span><br><span class="line">  </span><br><span class="line"><span class="comment">//浅拷贝方式实现</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">QuestionBank</span> <span class="keyword">implements</span> <span class="title class_">Cloneable</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String candidate; <span class="comment">// 考生</span></span><br><span class="line">    <span class="keyword">private</span> String number;    <span class="comment">// 考号</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;ChoiceQuestion&gt; choiceQuestionList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;AnswerQuestion&gt; answerQuestionList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> QuestionBank <span class="title function_">append</span><span class="params">(ChoiceQuestion choiceQuestion)</span> &#123;</span><br><span class="line">        choiceQuestionList.add(choiceQuestion);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> QuestionBank <span class="title function_">append</span><span class="params">(AnswerQuestion answerQuestion)</span> &#123;</span><br><span class="line">        answerQuestionList.add(answerQuestion);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="type">QuestionBank</span> <span class="variable">questionBank</span> <span class="operator">=</span> (QuestionBank) <span class="built_in">super</span>.clone();</span><br><span class="line">        questionBank.choiceQuestionList = (ArrayList&lt;ChoiceQuestion&gt;) choiceQuestionList.clone();</span><br><span class="line">        questionBank.answerQuestionList = (ArrayList&lt;AnswerQuestion&gt;) answerQuestionList.clone();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 题目乱序</span></span><br><span class="line">        Collections.shuffle(questionBank.choiceQuestionList);</span><br><span class="line">        Collections.shuffle(questionBank.answerQuestionList);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 答案乱序</span></span><br><span class="line">        ArrayList&lt;ChoiceQuestion&gt; choiceQuestionList = questionBank.choiceQuestionList;</span><br><span class="line">        <span class="keyword">for</span> (ChoiceQuestion question : choiceQuestionList) &#123;</span><br><span class="line">            <span class="type">Topic</span> <span class="variable">random</span> <span class="operator">=</span> TopicRandomUtil.random(question.getOption(), question.getKey());</span><br><span class="line">            question.setOption(random.getOption());</span><br><span class="line">            question.setKey(random.getKey());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> questionBank;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCandidate</span><span class="params">(String candidate)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.candidate = candidate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setNumber</span><span class="params">(String number)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.number = number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">detail</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;考生：&quot;</span> + candidate + <span class="string">&quot;\r\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;考号：&quot;</span> + number + <span class="string">&quot;\r\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;--------------------------------------------\r\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;一、选择题&quot;</span> + <span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> <span class="number">0</span>; idx &lt; choiceQuestionList.size(); idx++) &#123;</span><br><span class="line">            detail.append(<span class="string">&quot;第&quot;</span>).append(idx + <span class="number">1</span>).append(<span class="string">&quot;题：&quot;</span>).append(choiceQuestionList.get(idx).getName()).append(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">            Map&lt;String, String&gt; option = choiceQuestionList.get(idx).getOption();</span><br><span class="line">            <span class="keyword">for</span> (String key : option.keySet()) &#123;</span><br><span class="line">                detail.append(key).append(<span class="string">&quot;：&quot;</span>).append(option.get(key)).append(<span class="string">&quot;\r\n&quot;</span>);;</span><br><span class="line">            &#125;</span><br><span class="line">            detail.append(<span class="string">&quot;答案：&quot;</span>).append(choiceQuestionList.get(idx).getKey()).append(<span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        detail.append(<span class="string">&quot;二、问答题&quot;</span> + <span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> <span class="number">0</span>; idx &lt; answerQuestionList.size(); idx++) &#123;</span><br><span class="line">            detail.append(<span class="string">&quot;第&quot;</span>).append(idx + <span class="number">1</span>).append(<span class="string">&quot;题：&quot;</span>).append(answerQuestionList.get(idx).getName()).append(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">            detail.append(<span class="string">&quot;答案：&quot;</span>).append(answerQuestionList.get(idx).getKey()).append(<span class="string">&quot;\r\n\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> detail.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">题库管理：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">QuestionBankController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">QuestionBank</span> <span class="variable">questionBank</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">QuestionBank</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">QuestionBankController</span><span class="params">()</span> &#123;</span><br><span class="line">        questionBank.append(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;JAVA所定义的版本中不包括&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;JAVA2 EE&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;JAVA2 Card&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;JAVA2 ME&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;JAVA2 HE&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;E&quot;</span>, <span class="string">&quot;JAVA2 SE&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;D&quot;</span>)).append(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;下列说法正确的是&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;JAVA程序的main方法必须写在类里面&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;JAVA程序中可以有多个main方法&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;JAVA程序中类名必须与文件名一样&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;JAVA程序的main方法中如果只有一条语句，可以不用&#123;&#125;(大括号)括起来&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;A&quot;</span>)).append(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;变量命名规范说法正确的是&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;变量由字母、下划线、数字、$符号随意组成；&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;变量不能以数字作为开头；&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;A和a在java中是同一个变量；&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;不同类型的变量，可以起相同的名字；&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;B&quot;</span>)).append(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;以下()不是合法的标识符&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;STRING&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;x3x;&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;void&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;de$f&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;C&quot;</span>)).append(<span class="keyword">new</span> <span class="title class_">ChoiceQuestion</span>(<span class="string">&quot;表达式(11+3*8)/4%3的值是&quot;</span>, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;31&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;B&quot;</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;C&quot;</span>, <span class="string">&quot;1&quot;</span>);</span><br><span class="line">            put(<span class="string">&quot;D&quot;</span>, <span class="string">&quot;2&quot;</span>);</span><br><span class="line">        &#125;&#125;, <span class="string">&quot;D&quot;</span>))</span><br><span class="line">                .append(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;小红马和小黑马生的小马几条腿&quot;</span>, <span class="string">&quot;4条腿&quot;</span>))</span><br><span class="line">                .append(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;铁棒打头疼还是木棒打头疼&quot;</span>, <span class="string">&quot;头最疼&quot;</span>))</span><br><span class="line">                .append(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;什么床不能睡觉&quot;</span>, <span class="string">&quot;牙床&quot;</span>))</span><br><span class="line">                .append(<span class="keyword">new</span> <span class="title class_">AnswerQuestion</span>(<span class="string">&quot;为什么好马不吃回头草&quot;</span>, <span class="string">&quot;后面的草没了&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">createPaper</span><span class="params">(String candidate, String number)</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="type">QuestionBank</span> <span class="variable">questionBankClone</span> <span class="operator">=</span> (QuestionBank) questionBank.clone();</span><br><span class="line">        questionBankClone.setCandidate(candidate);</span><br><span class="line">        questionBankClone.setNumber(number);</span><br><span class="line">        <span class="keyword">return</span> questionBankClone.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">测试：</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_QuestionBank</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="type">QuestionBankController</span> <span class="variable">questionBankController</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">QuestionBankController</span>();</span><br><span class="line">        System.out.println(questionBankController.createPaper(<span class="string">&quot;花花&quot;</span>, <span class="string">&quot;1000001921032&quot;</span>));</span><br><span class="line">        System.out.println(questionBankController.createPaper(<span class="string">&quot;豆豆&quot;</span>, <span class="string">&quot;1000001921051&quot;</span>));</span><br><span class="line">        System.out.println(questionBankController.createPaper(<span class="string">&quot;大宝&quot;</span>, <span class="string">&quot;1000001921987&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>​    原型模式的出现解决了频繁创建对象赋值的操作，用于解决一些构建复杂的对象的创建工作。</p>
+<p>​    对象初始化过程：</p>
+<p>​    类加载检查-》分配内存-》初始化零值-》设置对象头-》执行init方法</p>
+<p>​    1、类加载检查：当虚拟机收到new指令的时候，会先检查常量池中是否可以定位到这个类的符号引用，这个符号引用代表这个类是否被加载过、解析过、初始化过、如果没有那就需要执行相应的类加载过程</p>
+<p>​    2、分配内存：通过第一步后，虚拟机会为新生对象分配内存（堆内存），分配方式有指针碰撞和空闲列表，选择那种方式由Java堆是否规整决定，而这点是有垃圾回收器是否带有压缩整理功能决定</p>
+<p>​    这个是看GC算法时标记-请出还是标记-整理（也是标记-压缩）</p>
+<p>​    CMS是并发标记清除（老年代）</p>
+<p>​    初始标记-》并发标记-》重新标记（更新）-》并发清除</p>
+<p>​    G1整体上看是标记整理，但是从局部（两个Region之间）上看是基于复制实现</p>
+<p>​    初始标记-》并发标记（可达性分析）-》最终标记（更新）-》筛选回收</p>
+<p>​    指针碰撞：</p>
+<p>​        如果Java堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，那所分配 内存就仅仅是把那个指针向空闲空间那边挪动一段与对象大小相等的距离。–复制或标记整理（G1）</p>
+<p>​    空闲列表:</p>
+<p>​        如果Java堆中的内存并不是规整的，已使用的内存和空 闲的内存相互交错，那就没有办法简单地进行指针碰撞了，虚拟机就必须维护一个列表，记 录上哪些内存块是可用的，在分配的时候从列表中找到一块足够大的空间划分给对象实例， 并更新列表上的记录（CMS，标记清除算法，但是如果在为一个较大的对象分配内存的时候找不到连续足够大的内存空间时会频繁的触发垃圾回收，也就是fullgc来为对象分配足够的内存空间）</p>
+<p>CAS+失败重试： CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</p>
+<p>TLAB（本地线程分配缓冲）：为每一个线程预先在堆内存分配一块儿内存，JVM在给线程中的对象分配内存时，首先在TLAB分配，当对象大于TLAB中的剩余内存或TLAB的内存已用尽时，再采用上述的CAS进行内存分配</p>
+<p>​    3、初始化：内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头）， 如果使用TLAB，这一工作过程也可以提前至TLAB分配时进行。这一步操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
+<p>​    4、设置对象头：在HotSpot虚拟机中，对象在内存中存储的布局可以分为3块区域：对象头（Header）、 实例数据（Instance Data）和对齐填充（Padding）。 HotSpot虚拟机的对象头包括两部分信息，第一部分用于存储对象自身的运行时数据， 如哈希码（HashCode）、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时 间戳等。对象头的另外一部分是类型指针，即对象指向它的类元数据的指针，虚拟机通过这个指 针来确定这个对象是哪个类的实例。 初始化零值之后，虚拟机要对对象进行必要的设置，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息。这些信息存放在对象的对象头（Object Header之中）。</p>
+<p>​    5、执行init方法：执行<init>方法，即对象按照程序员的意愿进行初始化。对应到语言层面上讲，就是为属性赋值（注意，这与上面的赋零值不同，这是由程序员赋的值），和执行构造方法。</p>
+<p>什么是栈内存：</p>
+<p>存储类型：1.基本数据类型 （int, short, long, byte, float, double, boolean, char）2.对象的引用 3.方法的调用</p>
+<p>共享机制：栈内数据共享，但线程私有</p>
+<p>作用时期：在代码运行时，每当调用一个方法，都在在栈内存中创建一个栈内存块（<strong>栈帧</strong>），方法结束后栈内存变成未使用的状态</p>
+<p>什么是堆内存：</p>
+<p>存储类型：1.存储对象（不是对象的引用）和数组</p>
+<p>共享机制：堆内数据非共享，但线程共享</p>
+<p>作用时期：运行代码，当<code>new</code>一个对象时候，现在栈内存中分配空间存放对象的引用指向堆内存，再在堆内存中分配空间存放对象数据</p>
+<p>什么是方法区：</p>
+<p>存储类型：1.存储 <strong>Class</strong> 二进制文件（含有虚拟机加载的类信息，常量，静态变量等数据）</p>
+<p>共享机制：线程共享</p>
+<p>作用时期：一个类会先加载到方法区的内存中，然后静态域被加载于<code>main</code>之前执行</p>
+<p>什么是常量池：</p>
+<p>存储类型：1.基本数据类型以 final 声明的常量值和<code>final String</code></p>
+<p>共享机制：常量池内数据是共享的，一个 <strong>Class</strong> 字节码文件对象对应一个常量池，线程共享</p>
+<p>作用时期：常量存储</p>
+<p>​    一个对象在可以被使用之前必须要被正确的实例化，在java代码中五种方式创建对象：</p>
+<p>​    1、使用new关键字来调用构造函数显示的创建对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Topic</span> <span class="variable">topic</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Topic</span>()</span><br></pre></td></tr></table></figure>
+
+<p>​    2、使用Class类的newInstance方法（反射）机制创建对象，这种是调用无参构造创建对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Topic</span> <span class="variable">topic</span> <span class="operator">=</span> Topic.class.newInstance();</span><br></pre></td></tr></table></figure>
+
+<p>​    3、使用Constructor类的newInstance方法（反射）机制创建对象，这种方式比Class类的newInstance方法更加强大，我们可以通过这个newInstance方法调用有参数的和私有的构造函数，事实上Class类的newInstance也是调用的Constructor类的newClass方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Constructor&lt;Topic&gt; constructor = Topic.class</span><br><span class="line">                .getConstructor(Integer.class);</span><br><span class="line">        <span class="type">Topic</span> <span class="variable">topic</span> <span class="operator">=</span> constructor.newInstance(<span class="number">123</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    4、使用Clone方法创建对象，无论何时我们调用一个对象的Clone方法，JVM都会帮我们创建一个新的一样的对象，并且在使用Clone方法创建对象的过程中并不会调用任何构造函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Topic</span> <span class="keyword">implements</span> <span class="title class_">Cloneable</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Topic</span><span class="params">(Integer id)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> Object <span class="title function_">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.clone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Constructor&lt;Topic&gt; constructor = Topic.class.getConstructor(Integer.class);</span><br><span class="line"><span class="type">Topic</span> <span class="variable">topic</span> <span class="operator">=</span> constructor.newInstance(<span class="number">123</span>);</span><br><span class="line"><span class="type">Topic</span> <span class="variable">topicB</span> <span class="operator">=</span> topic.clone();</span><br></pre></td></tr></table></figure>
+
+<p>​    5、使用（反）序列化机制创建对象，当我们反序列化一个对象时，JVM会给我们创建一个单独的对象，在此过程中，JVM并不会调用任何构造函数。为了反序列化一个对象，我们需要让我们的类实现Serializable接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Topic</span> <span class="keyword">implements</span> <span class="title class_">Cloneable</span>, Serializable &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Topic</span><span class="params">(Integer id)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> Object <span class="title function_">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.clone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Constructor&lt;Topic&gt; constructor = Topic.class.getConstructor(Integer.class);</span><br><span class="line"><span class="type">Topic</span> <span class="variable">topic</span> <span class="operator">=</span> constructor.newInstance(<span class="number">123</span>);</span><br><span class="line"><span class="comment">// 写对象</span></span><br><span class="line"><span class="type">ObjectOutputStream</span> <span class="variable">output</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;topic.bin&quot;</span>));</span><br><span class="line">output.writeObject(topic);</span><br><span class="line">output.close();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读对象</span></span><br><span class="line"><span class="type">ObjectInputStream</span> <span class="variable">input</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;topic.bin&quot;</span>));</span><br><span class="line"><span class="type">Topic</span> <span class="variable">topicb</span> <span class="operator">=</span> (Topic) input.readObject();</span><br><span class="line">System.out.println(topicb);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>​    以上说到对象的创建第四种方式Clone，不得不多提一下，Clone分为浅拷贝和深拷贝</p>
+<p>​    什么是赋值：摆一个对象赋值给一个新的变量，赋的其实是该对象的栈中的地址，而不是堆中的数据</p>
+<p>​    什么是浅拷贝：重新在堆中创建内存，拷贝前后对象的基本数据类型互不影响，但拷贝前后对象的引用类型因共享同一块内存，会互相影响（复杂对象）</p>
+<p>​        ①对于数据类型是基本数据类型的成员变量，浅拷贝会直接进行值传递，也就是将该属性值复制一份给新的对象。因为是两份不同的数据，所以对其中一个对象的该成员变量值进行修改，不会影响另一个对象拷贝得到的数据。</p>
+<p>​        ②对于数据类型是引用数据类型的成员变量，比如说成员变量是某个数组、某个类的对象等，那么浅拷贝会进行引用传递，也就是只是将该成员变量的引用值（内存地址）复制一份给新的对象。因为实际上两个对象的该成员变量都指向同一个实例。在这种情况下，在一个对象中修改该成员变量会影响到另一个对象的该成员变量值。</p>
+<p>​        ③String类型非常特殊，所以我额外设置了一个字符串类型的成员变量来进行说明。首先，String类型属于引用数据类型，不属于基本数据类型，但是String类型的数据是存放在常量池中的，也就是无法修改的！也就是说，当我将name属性从“摇头耶稣”改为“大傻子”后，并不是修改了这个数据的值，而是把这个数据的引用从指向”摇头耶稣“这个常量改为了指向”大傻子“这个常量。在这种情况下，另一个对象的name属性值仍然指向”摇头耶稣“不会受到影响。</p>
+<p>​    因为String类型底层被final修饰，值时不可被修改的，给String变量对象赋值,在常量池生成一个常量,栈中有该常量的引用,如果字符串改变,则会copy一个新的值.</p>
+<p>​    什么是深拷贝：从堆中卡片一个新的区域存放新对象，堆对象中的子对象进行递归拷贝，前后的两个对象互不影响</p>
+<p>​        实现方式：</p>
+<p>​            ①通过拷贝构造方法实现浅拷贝，拷贝构造方法指的是该类的构造方法参数为该类的对象。使用拷贝构造方法可以很好地完成浅拷贝，直接通过一个现有的对象创建出与该对象属性相同的新的对象。</p>
+<p>​            ②通过重写clone()方法进行浅拷贝。</p>
+<p>​        首先介绍对象图的概念。设想一下，一个类有一个对象，其成员变量中又有一个对象，该对象指向另一个对象，另一个对象又指向另一个对象，直到一个确定的实例。这就形成了对象图。那么，对于深拷贝来说，不仅要复制对象的所有基本数据类型的成员变量值，还要为所有引用数据类型的成员变量申请存储空间，并复制每个引用数据类型成员变量所引用的对象，直到该对象可达的所有对象。也就是说，对象进行深拷贝要对整个对象图进行拷贝！</p>
+<p>​        实现方式：</p>
+<p>​            ①通过重写clone方法来实现深拷贝，与通过重写clone方法实现浅拷贝的基本思路一样，只需要为对象图的每一层的每一个对象都实现Cloneable接口并重写clone方法，最后在最顶层的类的重写的clone方法中调用所有的clone方法即可实现深拷贝。简单的说就是：每一层的每个对象都进行浅拷贝&#x3D;深拷贝。</p>
+<p>​            ②虽然层次调用clone方法可以实现深拷贝，但是显然代码量实在太大。特别对于属性数量比较多、层次比较深的类而言，每个类都要重写clone方法太过繁琐。将对象序列化为字节序列后，默认会将该对象的整个对象图进行序列化，再通过反序列即可完美地实现深拷贝。</p>
+<p>​    简单地说，深拷贝对引用数据类型的成员变量的对象图中所有的对象都开辟了内存空间；而浅拷贝只是传递地址指向，新的对象并没有对引用数据类型创建内存空间。</p>
+<p>​    <strong>多思考，根据业务需求灵活运用，不要生搬硬套！！！！！</strong></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : WU DI <br/>
+        
+        原文链接 : <a href="">http://example.com/2022/03/21/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E4%B8%83%E7%AB%A0/</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+    <div class="social-share"
+  style="margin-top: -2rem"
+  data-wechat-qrcode-title="<p>微信扫一扫</p>"
+  data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>"
+   data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter" 
+  
+>
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%80%9D%E8%80%83/">
+              #思考
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/">
+              #...
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E7%AC%AC%E4%B8%83%E7%AB%A0/">
+              #第七章
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
+              #原型模式
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
+              #创建型模式
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%A6%82%E5%BF%B5%EF%AC%81/">
+              #概念ﬁ
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2022/03/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AC%AC%E5%85%AD%E7%AB%A0/" target="_self">设计模式--第六章</a>
+      </div>
+    
+    
+  </nav>
+
+   
+
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a target="_blank" rel="noopener" href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a target="_blank" rel="noopener" href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2022, 2, 1).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>
