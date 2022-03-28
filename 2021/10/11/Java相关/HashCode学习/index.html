@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+  
+  <title>HashCode学习 | INVOLUTION_STUDY</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java相关,概念,思考,...,HashCode,STAR法则,数据结构和算法,八股文," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="人生-谁都是第一次">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  
+<script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">INVOLUTION_STUDY.cn</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a 
+              href="/about/"
+              target="_self"
+            >
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/rocky9205" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>HashCode学习</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2021-10-11
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/Java%E7%9B%B8%E5%85%B3/">
+            Java相关
+          </a>
+      </span>
+    
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h3 id="正文："><a href="#正文：" class="headerlink" title="正文："></a>正文：</h3><h4 id="数据结构的学习："><a href="#数据结构的学习：" class="headerlink" title="数据结构的学习："></a>数据结构的学习：</h4><p>​        数据结构包括：数组(Array)、栈(stack)、队列(Queue)、链表(LinkList)、散列表(Hash)、堆(Heap)、图(Graph)</p>
+<p>​        HashMap作为经典数据结果，也是基础面试必问题目，HashMap是必须深入了解的知识点</p>
+<p>​        其中HashCode的散列是HashMap中很重要的设计思路，所以先学习HahsCode相关知识</p>
+<h4 id="HashCode学习："><a href="#HashCode学习：" class="headerlink" title="HashCode学习："></a>HashCode学习：</h4><p>​        通过相关面试题深入了解：Why does Java’s hashCode() in String use 31 as a multiplier?</p>
+<p>​        翻译过来就是指：hashCode的计算逻辑中为什么是31作为乘数</p>
+<p>​        当我们点进.hashCode()方法中，可以看到31作为一个固定值写在这个方法中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> hash;</span><br><span class="line">    <span class="keyword">if</span> (h == <span class="number">0</span> &amp;&amp; value.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">char</span> val[] = value;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; value.length; i++) &#123;</span><br><span class="line">            h = <span class="number">31</span> * h + val[i];</span><br><span class="line">        &#125;</span><br><span class="line">        hash = h;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        模拟上述代码验证HashCode值的生成逻辑</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">模拟</span><br><span class="line">/**</span><br><span class="line">     *  了解HashCode原理</span><br><span class="line">     */</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        //定义String类型局部变量</span><br><span class="line">        String hash = &quot;hahhahha&quot;;</span><br><span class="line">        //获取变量的hash值</span><br><span class="line">        System.out.println(hash.hashCode());</span><br><span class="line">        Integer hashCode = getHashCode(hash);</span><br><span class="line">        System.out.println(hashCode);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 模拟获取字符串的哈希值</span><br><span class="line">     *</span><br><span class="line">     * @param info 字符串</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    private static int getHashCode(String chars) &#123;</span><br><span class="line">        int hash = 0;</span><br><span class="line">        char[] value = chars.toCharArray();</span><br><span class="line">        int h = hash;</span><br><span class="line">        if (value.length &gt; 0) &#123;</span><br><span class="line">            for (char c : value) &#123;</span><br><span class="line">                int a = 31 * h;</span><br><span class="line">                h = a + c;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return h;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">-166336871</span><br><span class="line">-166336871</span><br></pre></td></tr></table></figure>
+
+<p>通过测试可以得出HashCode的计算时将字符串拆分成char类型的数组然后遍历数组中的每一个元素，设置初始HashCode值为0，获取单字符的ASCII编码值，进行累计叠加的计算，公式：<code>s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]</code></p>
+<p>那么问题来了为什么要选择31作为固定乘积值？</p>
+<p>网上的热门回答：</p>
+<ol>
+<li>31 是一个奇质数，如果选择偶数会导致乘积运算时数据溢出。</li>
+<li>另外在二进制中，2个5次方是32，那么也就是 <code>31 * i == (i &lt;&lt; 5) - i</code>。这主要是说乘积运算可以使用位移提升性能，同时目前的JVM虚拟机也会自动支持此类的优化。</li>
+<li>通过大量的单词计算hashCode，然后使用不同的数字作为乘积，得到碰撞结果，31被使用就很正常了</li>
+</ol>
+<p>上诉答案偏理论，会让我们看的云里雾里，我们需要通过实践得出答案，接下来我们使用大量单词并且调整固定乘积值进行hashCode碰撞测试</p>
+<h4 id="HashCode验证："><a href="#HashCode验证：" class="headerlink" title="HashCode验证："></a>HashCode验证：</h4><p>首先我们可以看到HashCode返回值为int类型  int类型占4个字节，每个字节为8位，也就是32位，根据计算机二进制的计算可以得出int类型的范围为-2^31~2^31-1（结尾有二进制整理的内容）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashCodeApplicationTests</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">getHahCode</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(getHashCode(<span class="string">&quot;a&quot;</span>));</span><br><span class="line">        System.out.println(getHashCode(<span class="string">&quot;ab&quot;</span>));</span><br><span class="line">        System.out.println(getHashCode(<span class="string">&quot;abc&quot;</span>));</span><br><span class="line">        System.out.println(getHashCode(<span class="string">&quot;abcd&quot;</span>));</span><br><span class="line">        System.out.println(getHashCode(<span class="string">&quot;abcde&quot;</span>));</span><br><span class="line">        System.out.println(getHashCode(<span class="string">&quot;abcdef&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟获取字符串的哈希值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> chars 字符串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getHashCode</span><span class="params">(String chars)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">char</span>[] value = chars.toCharArray();</span><br><span class="line">        <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> hash;</span><br><span class="line">        <span class="keyword">if</span> (value.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">char</span> c : value) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">31</span> * h;</span><br><span class="line">                h = a + c;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> h;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line"><span class="number">97</span></span><br><span class="line"><span class="number">3105</span></span><br><span class="line"><span class="number">96354</span></span><br><span class="line"><span class="number">2987074</span></span><br><span class="line"><span class="number">92599395</span></span><br><span class="line">-<span class="number">1424385949</span></span><br></pre></td></tr></table></figure>
+
+<p>​    上面的测试结果，我们发现”abcdef”的字符串的额HashCode为负数，为什么？</p>
+<p>按照公式来计算的话，”abcdef”的hash值应该是9259939531+102&#x3D;2870581347，这明显已经超出了int的取值范围<br>在计算9259939531&#x3D;2870581245时，结果已经超出了int的最大范围，这时Java虚拟机做了默认的类型提升，把中间结果用long类型存放，然后计算2870581245+102&#x3D;2870581347返回结果依然不能被int容纳，根据Java的基础类型的变窄转换规则，取结果的低32位，然后在计算机中实际是用补码存储的，正数的补码&#x3D;原码，所以2870581347在计算机中是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">10101011</span> <span class="number">00011001</span> <span class="number">10011000</span> <span class="number">01100011</span></span><br></pre></td></tr></table></figure>
+
+<p>基于<strong>变窄转换，丢弃高于int宽度的部分</strong>，得到补码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10101011</span> <span class="number">00011001</span> <span class="number">10011000</span> <span class="number">01100011</span></span><br></pre></td></tr></table></figure>
+
+<p>然后<strong>首位是符号位，1代表负数，负数的补码&#x3D;反码+1</strong>，反推得到反码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10101011</span> <span class="number">00011001</span> <span class="number">10011000</span> <span class="number">01100010</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>负数的反码&#x3D;符号位不变，原码按位取反</strong>，反推得到原码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">11010100</span> <span class="number">11100110</span> <span class="number">01100111</span> <span class="number">10011101</span>=-<span class="number">1010100</span> <span class="number">11100110</span> <span class="number">01100111</span> <span class="number">10011101</span></span><br></pre></td></tr></table></figure>
+
+<p>转化成十进制就是”-1424385949”，所以就有了上图的输出结果</p>
+<p>上面总结了为什么HashCode存在负数，下面我们使用大量数据计算HashCode底层为什么使用31作为固定乘积值，先准备10万+单词进行hash计算</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br></pre></td><td class="code"><pre><span class="line">读取本地文件，进行hash计算：</span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testHahCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//读取文件</span></span><br><span class="line">        Set&lt;String&gt; words = readWordList();</span><br><span class="line">        System.out.println(<span class="string">&quot;单词数量：&quot;</span> + words.size());</span><br><span class="line">        List&lt;RateInfo&gt; rateInfoList = HashCode.collisionRateList(words, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">17</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">33</span>, <span class="number">39</span>, <span class="number">41</span>, <span class="number">199</span>);</span><br><span class="line">        <span class="keyword">for</span> (RateInfo rate : rateInfoList) &#123;</span><br><span class="line">            System.out.printf(<span class="string">&quot;乘数 = %4d, 最小Hash = %11d, 最大Hash = %10d, 碰撞数量 =%6d, 碰撞概率 = %.4f%%%n&quot;</span>, rate.getMultiplier(), rate.getMinHash(), rate.getMaxHash(), rate.getCollisionCount(), rate.getCollisionRate() * <span class="number">100</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">读取本地单词表方法：</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 读取本地文件，单词表</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 单词集合(去重)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Set&lt;String&gt; <span class="title function_">readWordList</span><span class="params">()</span>&#123;</span><br><span class="line">        Set&lt;String&gt; list = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> ResourceUtils.getFile(<span class="string">&quot;classpath:templates/103976个英语单词库.txt&quot;</span>);</span><br><span class="line">            <span class="type">InputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);</span><br><span class="line">            <span class="type">InputStreamReader</span> <span class="variable">isr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(fis, StandardCharsets.UTF_8);</span><br><span class="line">            <span class="type">BufferedReader</span> <span class="variable">br</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(isr);</span><br><span class="line">            <span class="type">String</span> <span class="variable">line</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">while</span> ((line = br.readLine()) != <span class="literal">null</span>) &#123;</span><br><span class="line">                String[] ss = line.split(<span class="string">&quot;\t&quot;</span>);</span><br><span class="line">                list.add(ss[<span class="number">1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">            br.close();</span><br><span class="line">            isr.close();</span><br><span class="line">            fis.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ignore) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">hash值碰撞计算：</span><br><span class="line"><span class="keyword">package</span> org.itstack.interview;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashCode</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * public int hashCode() &#123;</span></span><br><span class="line"><span class="comment">     * int h = hash;</span></span><br><span class="line"><span class="comment">     * if (h == 0 &amp;&amp; value.length &gt; 0) &#123;</span></span><br><span class="line"><span class="comment">     * char val[] = value;</span></span><br><span class="line"><span class="comment">     * for (int i = 0; i &lt; value.length; i++) &#123;</span></span><br><span class="line"><span class="comment">     * h = 31 * h + val[i];</span></span><br><span class="line"><span class="comment">     * &#125;</span></span><br><span class="line"><span class="comment">     * hash = h;</span></span><br><span class="line"><span class="comment">     * &#125;</span></span><br><span class="line"><span class="comment">     * return h;</span></span><br><span class="line"><span class="comment">     * &#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title function_">hashCode</span><span class="params">(String str, Integer multiplier)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; str.length(); i++) &#123;</span><br><span class="line">            hash = multiplier * hash + str.charAt(i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> hash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算Hash碰撞概率</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> RateInfo <span class="title function_">hashCollisionRate</span><span class="params">(Integer multiplier, List&lt;Integer&gt; hashCodeList)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">maxHash</span> <span class="operator">=</span> hashCodeList.stream().max(Integer::compareTo).get();</span><br><span class="line">        <span class="type">int</span> <span class="variable">minHash</span> <span class="operator">=</span> hashCodeList.stream().min(Integer::compareTo).get();</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">collisionCount</span> <span class="operator">=</span> (<span class="type">int</span>) (hashCodeList.size() - hashCodeList.stream().distinct().count());</span><br><span class="line">        <span class="type">double</span> <span class="variable">collisionRate</span> <span class="operator">=</span> (collisionCount * <span class="number">1.0</span>) / hashCodeList.size();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RateInfo</span>(maxHash, minHash, multiplier, collisionCount, collisionRate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;RateInfo&gt; <span class="title function_">collisionRateList</span><span class="params">(Set&lt;String&gt; strList, Integer... multipliers)</span> &#123;</span><br><span class="line">        List&lt;RateInfo&gt; rateInfoList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Integer multiplier : multipliers) &#123;</span><br><span class="line">            List&lt;Integer&gt; hashCodeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            <span class="keyword">for</span> (String str : strList) &#123;</span><br><span class="line">                <span class="type">Integer</span> <span class="variable">hashCode</span> <span class="operator">=</span> hashCode(str, multiplier);</span><br><span class="line">                hashCodeList.add(hashCode);</span><br><span class="line">            &#125;</span><br><span class="line">            rateInfoList.add(hashCollisionRate(multiplier, hashCodeList));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> rateInfoList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Map&lt;Integer, Integer&gt; <span class="title function_">hashArea</span><span class="params">(List&lt;Integer&gt; hashCodeList)</span> &#123;</span><br><span class="line">        Map&lt;Integer, Integer&gt; statistics = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">long</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0x80000000</span>; i &lt;= <span class="number">0x7fffffff</span>; i += <span class="number">67108864</span>) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> i;</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> min + <span class="number">67108864</span>;</span><br><span class="line">            <span class="comment">// 筛选出每个格子里的哈希值数量，java8流统计；https://bugstack.cn/itstack-demo-any/2019/12/10/%E6%9C%89%E7%82%B9%E5%B9%B2%E8%B4%A7-Jdk1.8%E6%96%B0%E7%89%B9%E6%80%A7%E5%AE%9E%E6%88%98%E7%AF%87(41%E4%B8%AA%E6%A1%88%E4%BE%8B).html</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> (<span class="type">int</span>) hashCodeList.parallelStream().filter(x -&gt; x &gt;= min &amp;&amp; x &lt; max).count();</span><br><span class="line">            statistics.put(start++, num);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> statistics;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Map&lt;Integer, Integer&gt; <span class="title function_">hashArea</span><span class="params">(Set&lt;String&gt; strList, Integer multiplier)</span>&#123;</span><br><span class="line">        List&lt;Integer&gt; hashCodeList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (String str : strList) &#123;</span><br><span class="line">            <span class="type">Integer</span> <span class="variable">hashCode</span> <span class="operator">=</span> hashCode(str, multiplier);</span><br><span class="line">            hashCodeList.add(hashCode);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> hashArea(hashCodeList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">封装对象：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RateInfo</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> maxHash;            <span class="comment">// 最大Hash</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> minHash;            <span class="comment">// 最小Hash</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> multiplier;         <span class="comment">// hash计算乘机因子</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> collisionCount;     <span class="comment">// 碰撞数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">double</span> collisionRate;   <span class="comment">// 碰撞比率</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">RateInfo</span><span class="params">(<span class="type">int</span> maxHash, <span class="type">int</span> minHash, <span class="type">int</span> multiplier, <span class="type">int</span> collisionCount, <span class="type">double</span> collisionRate)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.maxHash = maxHash;</span><br><span class="line">        <span class="built_in">this</span>.minHash = minHash;</span><br><span class="line">        <span class="built_in">this</span>.multiplier = multiplier;</span><br><span class="line">        <span class="built_in">this</span>.collisionCount = collisionCount;</span><br><span class="line">        <span class="built_in">this</span>.collisionRate = collisionRate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getMaxHash</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> maxHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMaxHash</span><span class="params">(<span class="type">int</span> maxHash)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.maxHash = maxHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getMinHash</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> minHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMinHash</span><span class="params">(<span class="type">int</span> minHash)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.minHash = minHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getMultiplier</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> multiplier;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMultiplier</span><span class="params">(<span class="type">int</span> multiplier)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.multiplier = multiplier;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getCollisionCount</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> collisionCount;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCollisionCount</span><span class="params">(<span class="type">int</span> collisionCount)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.collisionCount = collisionCount;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">getCollisionRate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> collisionRate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCollisionRate</span><span class="params">(<span class="type">double</span> collisionRate)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.collisionRate = collisionRate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">结果：</span><br><span class="line">单词数量：<span class="number">103976</span></span><br><span class="line">乘数 =    <span class="number">2</span>, 最小Hash =          <span class="number">97</span>, 最大Hash = <span class="number">1842581979</span>, 碰撞数量 = <span class="number">60382</span>, 碰撞概率 = <span class="number">58.0730</span>%</span><br><span class="line">乘数 =    <span class="number">3</span>, 最小Hash = -<span class="number">2147308825</span>, 最大Hash = <span class="number">2146995420</span>, 碰撞数量 = <span class="number">24300</span>, 碰撞概率 = <span class="number">23.3708</span>%</span><br><span class="line">乘数 =    <span class="number">5</span>, 最小Hash = -<span class="number">2147091606</span>, 最大Hash = <span class="number">2147227581</span>, 碰撞数量 =  <span class="number">7994</span>, 碰撞概率 = <span class="number">7.6883</span>%</span><br><span class="line">乘数 =    <span class="number">7</span>, 最小Hash = -<span class="number">2147431389</span>, 最大Hash = <span class="number">2147226363</span>, 碰撞数量 =  <span class="number">3826</span>, 碰撞概率 = <span class="number">3.6797</span>%</span><br><span class="line">乘数 =   <span class="number">17</span>, 最小Hash = -<span class="number">2147238638</span>, 最大Hash = <span class="number">2147101452</span>, 碰撞数量 =   <span class="number">576</span>, 碰撞概率 = <span class="number">0.5540</span>%</span><br><span class="line">乘数 =   <span class="number">31</span>, 最小Hash = -<span class="number">2147461248</span>, 最大Hash = <span class="number">2147444544</span>, 碰撞数量 =     <span class="number">2</span>, 碰撞概率 = <span class="number">0.0019</span>%</span><br><span class="line">乘数 =   <span class="number">32</span>, 最小Hash = -<span class="number">2007883634</span>, 最大Hash = <span class="number">2074238226</span>, 碰撞数量 = <span class="number">34947</span>, 碰撞概率 = <span class="number">33.6106</span>%</span><br><span class="line">乘数 =   <span class="number">33</span>, 最小Hash = -<span class="number">2147469046</span>, 最大Hash = <span class="number">2147378587</span>, 碰撞数量 =     <span class="number">1</span>, 碰撞概率 = <span class="number">0.0010</span>%</span><br><span class="line">乘数 =   <span class="number">39</span>, 最小Hash = -<span class="number">2147463635</span>, 最大Hash = <span class="number">2147443239</span>, 碰撞数量 =     <span class="number">0</span>, 碰撞概率 = <span class="number">0.0000</span>%</span><br><span class="line">乘数 =   <span class="number">41</span>, 最小Hash = -<span class="number">2147423916</span>, 最大Hash = <span class="number">2147441721</span>, 碰撞数量 =     <span class="number">1</span>, 碰撞概率 = <span class="number">0.0010</span>%</span><br><span class="line">乘数 =  <span class="number">199</span>, 最小Hash = -<span class="number">2147459902</span>, 最大Hash = <span class="number">2147480320</span>, 碰撞数量 =     <span class="number">0</span>, 碰撞概率 = <span class="number">0.0000</span>%</span><br></pre></td></tr></table></figure>
+
+
+
+<p>以上就是不同的乘数下的hash碰撞结果图标展示，从这里可以看出如下信息；</p>
+<ol>
+<li>乘数是2时，hash的取值范围比较小，基本是堆积到一个范围内了，后面内容会看到这块的展示。</li>
+<li>乘数是3、5、7、17等，都有较大的碰撞概率</li>
+<li><strong>乘数是31的时候，碰撞的概率已经很小了，基本稳定。</strong></li>
+<li>顺着往下看，你会发现199的碰撞概率更小，这就相当于一排奇数的茅坑量多，自然会减少碰撞。<strong>但这个范围值已经远超过int的取值范围了，如果用此数作为乘数，又返回int值，就会丢失数据信息</strong>。</li>
+<li>之前我们学习了int类型的取值范围的来源，计算方式，结果超范围后的结果的展示方式，综上所诉31是最合适的乘积值</li>
+</ol>
+<h4 id="Hash值散列分布："><a href="#Hash值散列分布：" class="headerlink" title="Hash值散列分布："></a>Hash值散列分布：</h4><p>除了以上看到哈希值使用不同乘积值后的一个碰撞概率后，关于散列表也就是hash，还有一个非常重要的点，那就是要尽可能的让数据散列分布。只有这样才能减少hash碰撞，也就是HashMap源码。</p>
+<p>实践验证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">分段存放：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;Integer, Integer&gt; <span class="title function_">hashArea</span><span class="params">(List&lt;Integer&gt; hashCodeList)</span> &#123;</span><br><span class="line">    Map&lt;Integer, Integer&gt; statistics = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line">    <span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">long</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0x80000000</span>; i &lt;= <span class="number">0x7fffffff</span>; i += <span class="number">67108864</span>) &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> i;</span><br><span class="line">        <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> min + <span class="number">67108864</span>;</span><br><span class="line">        <span class="comment">// 筛选出每个格子里的哈希值数量</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> (<span class="type">int</span>) hashCodeList.parallelStream().filter(x -&gt; x &gt;= min &amp;&amp; x &lt; max).count();</span><br><span class="line">        statistics.put(start++, num);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> statistics;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">测试：</span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test_hashArea</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(HashCode.hashArea(words, <span class="number">2</span>).values());</span><br><span class="line">        System.out.println(HashCode.hashArea(words, <span class="number">7</span>).values());</span><br><span class="line">        System.out.println(HashCode.hashArea(words, <span class="number">31</span>).values());</span><br><span class="line">        System.out.println(HashCode.hashArea(words, <span class="number">32</span>).values());</span><br><span class="line">        System.out.println(HashCode.hashArea(words, <span class="number">199</span>).values());</span><br><span class="line">    &#125;</span><br><span class="line">结果：</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">103910</span>, <span class="number">34</span>, <span class="number">0</span>, <span class="number">18</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">7</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">310</span>, <span class="number">364</span>, <span class="number">284</span>, <span class="number">292</span>, <span class="number">393</span>, <span class="number">506</span>, <span class="number">656</span>, <span class="number">460</span>, <span class="number">451</span>, <span class="number">410</span>, <span class="number">441</span>, <span class="number">522</span>, <span class="number">485</span>, <span class="number">458</span>, <span class="number">725</span>, <span class="number">559</span>, <span class="number">391</span>, <span class="number">493</span>, <span class="number">319</span>, <span class="number">308</span>, <span class="number">479</span>, <span class="number">469</span>, <span class="number">454</span>, <span class="number">354</span>, <span class="number">491</span>, <span class="number">486</span>, <span class="number">361</span>, <span class="number">425</span>, <span class="number">347</span>, <span class="number">442</span>, <span class="number">245</span>, <span class="number">317</span>, <span class="number">38397</span>, <span class="number">15253</span>, <span class="number">286</span>, <span class="number">371</span>, <span class="number">869</span>, <span class="number">1509</span>, <span class="number">2012</span>, <span class="number">1049</span>, <span class="number">1186</span>, <span class="number">2890</span>, <span class="number">7992</span>, <span class="number">6821</span>, <span class="number">975</span>, <span class="number">1061</span>, <span class="number">1467</span>, <span class="number">1130</span>, <span class="number">1350</span>, <span class="number">1200</span>, <span class="number">482</span>, <span class="number">291</span>, <span class="number">319</span>, <span class="number">301</span>, <span class="number">241</span>, <span class="number">245</span>, <span class="number">324</span>, <span class="number">239</span>, <span class="number">260</span>, <span class="number">272</span>, <span class="number">433</span>, <span class="number">317</span>, <span class="number">266</span>, <span class="number">471</span>]</span><br><span class="line">[<span class="number">1292</span>, <span class="number">1065</span>, <span class="number">1197</span>, <span class="number">1148</span>, <span class="number">1217</span>, <span class="number">978</span>, <span class="number">1157</span>, <span class="number">1157</span>, <span class="number">1203</span>, <span class="number">1099</span>, <span class="number">1737</span>, <span class="number">3011</span>, <span class="number">2235</span>, <span class="number">2160</span>, <span class="number">1612</span>, <span class="number">2443</span>, <span class="number">2004</span>, <span class="number">1941</span>, <span class="number">3268</span>, <span class="number">2047</span>, <span class="number">1792</span>, <span class="number">1615</span>, <span class="number">1257</span>, <span class="number">1316</span>, <span class="number">1350</span>, <span class="number">1297</span>, <span class="number">1234</span>, <span class="number">1698</span>, <span class="number">1318</span>, <span class="number">1137</span>, <span class="number">1217</span>, <span class="number">1385</span>, <span class="number">8237</span>, <span class="number">8404</span>, <span class="number">1214</span>, <span class="number">1205</span>, <span class="number">1199</span>, <span class="number">1174</span>, <span class="number">1092</span>, <span class="number">1203</span>, <span class="number">1472</span>, <span class="number">1047</span>, <span class="number">1125</span>, <span class="number">1264</span>, <span class="number">1317</span>, <span class="number">1075</span>, <span class="number">1527</span>, <span class="number">1231</span>, <span class="number">1552</span>, <span class="number">1041</span>, <span class="number">1201</span>, <span class="number">1085</span>, <span class="number">1258</span>, <span class="number">1153</span>, <span class="number">1255</span>, <span class="number">1223</span>, <span class="number">1289</span>, <span class="number">1084</span>, <span class="number">1008</span>, <span class="number">1440</span>, <span class="number">1230</span>, <span class="number">1400</span>, <span class="number">1107</span>, <span class="number">1277</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">1607</span>, <span class="number">1044</span>, <span class="number">1614</span>, <span class="number">1559</span>, <span class="number">1135</span>, <span class="number">1575</span>, <span class="number">1664</span>, <span class="number">2360</span>, <span class="number">1733</span>, <span class="number">2642</span>, <span class="number">1305</span>, <span class="number">301</span>, <span class="number">195</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3653</span>, <span class="number">1745</span>, <span class="number">3973</span>, <span class="number">2144</span>, <span class="number">2987</span>, <span class="number">1750</span>, <span class="number">1090</span>, <span class="number">3674</span>, <span class="number">2153</span>, <span class="number">2471</span>, <span class="number">1390</span>, <span class="number">391</span>, <span class="number">579</span>, <span class="number">0</span>, <span class="number">6948</span>, <span class="number">7109</span>, <span class="number">2489</span>, <span class="number">2931</span>, <span class="number">1340</span>, <span class="number">980</span>, <span class="number">1016</span>, <span class="number">2407</span>, <span class="number">5064</span>, <span class="number">2291</span>, <span class="number">3314</span>, <span class="number">4285</span>, <span class="number">1138</span>, <span class="number">351</span>, <span class="number">658</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2142</span>, <span class="number">988</span>, <span class="number">2709</span>, <span class="number">485</span>, <span class="number">1919</span>, <span class="number">587</span>, <span class="number">547</span>, <span class="number">2290</span>, <span class="number">612</span>, <span class="number">1555</span>, <span class="number">870</span>, <span class="number">57</span>, <span class="number">160</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1415</span>, <span class="number">1455</span>, <span class="number">1617</span>, <span class="number">1642</span>, <span class="number">1491</span>, <span class="number">1418</span>, <span class="number">1506</span>, <span class="number">1663</span>, <span class="number">1694</span>, <span class="number">1594</span>, <span class="number">1450</span>, <span class="number">1428</span>, <span class="number">1462</span>, <span class="number">1545</span>, <span class="number">1693</span>, <span class="number">1566</span>, <span class="number">1354</span>, <span class="number">1413</span>, <span class="number">1495</span>, <span class="number">1720</span>, <span class="number">1648</span>, <span class="number">1641</span>, <span class="number">1473</span>, <span class="number">1386</span>, <span class="number">1401</span>, <span class="number">1468</span>, <span class="number">1548</span>, <span class="number">1518</span>, <span class="number">1342</span>, <span class="number">1409</span>, <span class="number">1561</span>, <span class="number">1656</span>, <span class="number">4110</span>, <span class="number">1423</span>, <span class="number">1319</span>, <span class="number">1327</span>, <span class="number">1404</span>, <span class="number">1639</span>, <span class="number">1579</span>, <span class="number">1389</span>, <span class="number">1406</span>, <span class="number">1452</span>, <span class="number">1613</span>, <span class="number">3019</span>, <span class="number">3373</span>, <span class="number">3030</span>, <span class="number">1748</span>, <span class="number">1471</span>, <span class="number">1490</span>, <span class="number">1469</span>, <span class="number">1457</span>, <span class="number">1396</span>, <span class="number">1457</span>, <span class="number">1644</span>, <span class="number">1754</span>, <span class="number">1624</span>, <span class="number">1503</span>, <span class="number">1498</span>, <span class="number">1304</span>, <span class="number">1507</span>, <span class="number">1458</span>, <span class="number">1501</span>, <span class="number">1486</span>, <span class="number">1454</span>]</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将int类型的范围-2^31~2^31-1平均分为64个格子进行存放每个格子都会有对应数量的hsh值，将上述结论的数据展示在图表中</p>
+<p><img src="https://s1oung.oss-cn-beijing.aliyuncs.com/%E5%AD%A6%E4%B9%A0/JAVA%E7%9B%B8%E5%85%B3-HashCode/HashCode.png" alt="HashCode"></p>
+<ul>
+<li>以上是一个堆积百分比统计图，可以看到下方是不同乘数下的，每个格子里的数据统计。</li>
+<li>除了199不能用以外，31的散列结果相对来说比较均匀</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>二进制学习（题外话）：</p>
+<p>首先我们可以看到HashCode返回值为int类型  int类型占4个字节，每个字节为8位，也就是32位，所以一个整形变量在计算机当中可以用32位二进制表示</p>
+<p>又因为二进制里最高位（第一位）为符号为（1：负，0：正），所以剩下31位所以为2^31-1</p>
+<p>疑问来了：【最大值：2^31-1】为什么不是2^31？</p>
+<p>(1)假设只有三位，其中首位为符号位的话，最大值的情况不就是011吗?也即表示3.<br>3 &#x3D; 2^（3-1）-1.</p>
+<p>(2)32位的时候同理，01111111 11111111 11111111 11111111 &#x2F;&#x2F;而这个数表示的值就是2^31-1.<br>2^31-1 &#x3D; 2^（32-1）-1.</p>
+<p>疑问来了：【最小值：-2^31】为什么不是-（2^31-1）？</p>
+<p>(1)因为数据是由二进制补码存储的:<br>1)当原码为正数的时候，正数的原码反码补码都相同,即00011的反码也为00011，补码也为00011.<br>2)当原码为负数的时候，反码即按位取反，比如10011为原码,10011可表示-3,那么符号位不变,其余位按位取反即反码11100.那么10011的补码便是11101.</p>
+<p>(2)所以可知int所取的最小值原码为：11111111 11111111 11111111 11111111.<br>它的反码为：10000000 00000000 00000000 00000000. （在原码中表示-0.）<br>它的补码为：10000000 00000000 00000000 00000001. （在原码中表示-1.）<br>依次可以类推-2，-3，-4……-2^31！<br>【推到-2^31】<br>其原码为10000000 00000000 00000000 00000001<br>其反码为11111111 11111111 11111111 11111110<br>其补码为11111111 11111111 11111111 11111111<br>从上可知最小值只能表示到-2^31，而无法表示到更小的一位：-2^31-1！</p>
+<p>4.【综上所诉，int(4字节)范围是：-2^31~2^31-1】！</p>
+<p>理解：</p>
+<p>​        二进制转换为十进制:</p>
+<p>​        按权相加法，即将二进制每位上的数乘以权，然后相加之和即是十进制数。</p>
+<p>​        权–》下标</p>
+<p>​        位–》计算的个</p>
+<p>​        负数转换为二进制分为三部：</p>
+<p>​            1、首先将负数转换为对应的原码</p>
+<p>​            2、 再将原码的每一位做取反操作的到反码</p>
+<p>​            3、将反码+1得到补码</p>
+<p>举例说明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3</span>在二进制中表示 <span class="number">0011</span>，数据计算公式 <span class="number">2</span>^<span class="number">3</span>*<span class="number">0</span>+<span class="number">2</span>^<span class="number">2</span>*<span class="number">0</span>+<span class="number">2</span>^<span class="number">1</span>*<span class="number">1</span>+<span class="number">2</span>^<span class="number">0</span>*<span class="number">1</span>=<span class="number">4</span>*<span class="number">0</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">1</span>*<span class="number">1</span>=<span class="number">0</span>+<span class="number">2</span>+<span class="number">1</span>=<span class="number">3</span></span><br><span class="line"><span class="number">5</span>的表示：<span class="number">0101</span> <span class="number">2</span>^<span class="number">3</span>*<span class="number">0</span>+<span class="number">2</span>^<span class="number">2</span>*<span class="number">1</span>+<span class="number">2</span>^<span class="number">1</span>*<span class="number">0</span>+<span class="number">2</span>^<span class="number">0</span>*<span class="number">1</span>=<span class="number">0</span>+<span class="number">4</span>+<span class="number">0</span>+<span class="number">1</span>=<span class="number">5</span>  </span><br><span class="line"><span class="number">1111</span>： <span class="number">2</span>^<span class="number">3</span>*<span class="number">1</span>+<span class="number">2</span>^<span class="number">2</span>*<span class="number">1</span>+<span class="number">2</span>^<span class="number">1</span>*<span class="number">1</span>+<span class="number">2</span>^<span class="number">0</span>*<span class="number">1</span> =  <span class="number">15</span></span><br><span class="line"><span class="number">1001</span>：<span class="number">2</span>^<span class="number">3</span>*<span class="number">1</span>+<span class="number">2</span>^<span class="number">2</span>*<span class="number">0</span>+<span class="number">2</span>^<span class="number">1</span>*<span class="number">0</span>+<span class="number">2</span>^<span class="number">0</span>*<span class="number">1</span>=  <span class="number">9</span> <span class="number">2</span>^<span class="number">4</span>-<span class="number">2</span>^<span class="number">3</span>-<span class="number">2</span>^<span class="number">2</span>+<span class="number">2</span>^<span class="number">1</span>=<span class="number">16</span>-<span class="number">8</span>-<span class="number">4</span>+<span class="number">2</span></span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"> <span class="number">0</span>  <span class="number">0.</span>.<span class="number">.0000</span>  <span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">1</span>  <span class="number">0.</span>.<span class="number">.0001</span>  <span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">2</span>  <span class="number">0.</span>.<span class="number">.0010</span>  <span class="number">0</span>+<span class="number">0</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">3</span>  <span class="number">0.</span>.<span class="number">.0011</span>  <span class="number">0</span>+<span class="number">0</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">4</span>  <span class="number">0.</span>.<span class="number">.0100</span>  <span class="number">0</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">5</span>  <span class="number">0.</span>.<span class="number">.0101</span>  <span class="number">0</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">6</span>  <span class="number">0.</span>.<span class="number">.0110</span>  <span class="number">0</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">7</span>  <span class="number">0.</span>.<span class="number">.0111</span>  <span class="number">0</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">8</span>  <span class="number">0.</span>.<span class="number">.1000</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">9</span>  <span class="number">0.</span>.<span class="number">.1001</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">10</span> <span class="number">0.</span>.<span class="number">.1010</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">11</span> <span class="number">0.</span>.<span class="number">.1011</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">12</span> <span class="number">0.</span>.<span class="number">.1100</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">13</span> <span class="number">0.</span>.<span class="number">.1101</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">14</span> <span class="number">0.</span>.<span class="number">.1110</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">15</span> <span class="number">0.</span>.<span class="number">.1111</span>  <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">2</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">16</span> <span class="number">0.</span>.<span class="number">.1</span> <span class="number">0000</span> <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span></span><br><span class="line"> <span class="number">17</span> <span class="number">0.</span>.<span class="number">.1</span> <span class="number">0001</span> <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">1</span></span><br><span class="line"> <span class="number">18</span> <span class="number">0.</span>.<span class="number">.1</span> <span class="number">0010</span> <span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>*<span class="number">2</span>+<span class="number">0</span>+<span class="number">0</span>+<span class="number">2</span>*<span class="number">1</span>+<span class="number">0</span></span><br><span class="line"> -<span class="number">1</span> 原码：<span class="number">1.</span>.. <span class="number">0001</span> 反码：<span class="number">1.</span>.. <span class="number">1110</span> 补码：<span class="number">1.</span>.. <span class="number">1111</span></span><br><span class="line"> -<span class="number">2</span> 原码：<span class="number">1.</span>.. <span class="number">0010</span> 反码：<span class="number">1.</span>.. <span class="number">1101</span> 补码：<span class="number">1.</span>.. <span class="number">1110</span></span><br><span class="line">  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>&lt;“STAR法则是情境(situation)、任务（task）、行动(action)、结果(result)四项的缩写&gt;</code></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : WU DI <br/>
+        
+        原文链接 : <a href="">http://example.com/2021/10/11/Java%E7%9B%B8%E5%85%B3/HashCode%E5%AD%A6%E4%B9%A0/</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+    <div class="social-share"
+  style="margin-top: -2rem"
+  data-wechat-qrcode-title="<p>微信扫一扫</p>"
+  data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>"
+   data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter" 
+  
+>
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%A6%82%E5%BF%B5/">
+              #概念
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%80%9D%E8%80%83/">
+              #思考
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/">
+              #...
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/HashCode/">
+              #HashCode
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/STAR%E6%B3%95%E5%88%99/">
+              #STAR法则
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/">
+              #数据结构和算法
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/%E5%85%AB%E8%82%A1%E6%96%87/">
+              #八股文
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/2022/03/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%88%9D%E7%AB%A0/" target="_self">设计模式--初章</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a target="_blank" rel="noopener" href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a target="_blank" rel="noopener" href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2022, 2, 1).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>
